@@ -18,11 +18,13 @@ export function SemanalClient({
           Esta semana
         </p>
         <p className="mt-1 text-sm font-bold text-violet-900">
-          Semana ISO {meta.semanaISO} · {meta.anioISO}
+          {meta.semanaEtiqueta}
         </p>
         <p className="mt-0.5 text-xs text-violet-700/80">
-          Actividad {meta.actividadNumero} de 8 · la siguiente rotará la próxima
-          semana
+          Actividad {meta.actividadNumero} de 8 · nueva cada lunes (semana ISO)
+        </p>
+        <p className="mt-3 border-t border-violet-200/60 pt-3 text-left text-[0.7rem] leading-snug text-violet-800/90">
+          {meta.detalleCiclo}
         </p>
       </div>
 
