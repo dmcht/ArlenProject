@@ -23,18 +23,18 @@ export default async function CafePage() {
       : { posts: [], loadError: null };
 
   return (
-    <div className="min-h-full bg-gradient-to-b from-amber-50 via-orange-50/30 to-white px-4 py-8 pb-14 sm:px-6">
+    <div className="min-h-full bg-gradient-to-b from-zinc-950 via-neutral-950 to-black px-4 py-8 pb-14 sm:px-6">
       <div className="mx-auto max-w-lg">
         <Link
           href="/"
-          className="inline-flex text-sm font-semibold text-amber-900 underline-offset-4 hover:underline"
+          className="inline-flex text-sm font-semibold text-zinc-400 underline-offset-4 hover:text-white hover:underline"
         >
           ← Volver al inicio
         </Link>
-        <h1 className="mt-6 text-2xl font-extrabold tracking-tight text-amber-950 sm:text-[1.65rem]">
+        <h1 className="mt-6 text-2xl font-extrabold tracking-tight text-zinc-50 sm:text-[1.65rem]">
           Café de conexión
         </h1>
-        <p className="mt-3 text-sm font-medium leading-relaxed text-slate-600">
+        <p className="mt-3 text-sm font-medium leading-relaxed text-zinc-400">
           Comparte una foto de tu encuentro: se muestra como una publicación en
           el muro para que el equipo celebre esos momentos.
         </p>

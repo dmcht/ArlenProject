@@ -1,8 +1,12 @@
 @import "tailwindcss";
 
+/* Grupo Platino: negro, blanco, acentos tipo platino (grises metálicos) */
 :root {
-  --background: #e0f0fa;
-  --foreground: #1e293b;
+  --background: #09090b;
+  --foreground: #fafafa;
+  --muted: #a1a1aa;
+  --card: #18181b;
+  --card-border: #3f3f46;
 }
 
 @theme inline {

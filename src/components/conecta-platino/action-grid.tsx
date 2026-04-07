@@ -24,7 +24,7 @@ const cards: Card[] = [
     href: "/conoce",
     title: "Conoce a un Compañero",
     gradient:
-      "from-sky-500 via-sky-600 to-blue-700 shadow-sky-900/10 hover:shadow-sky-900/20",
+      "from-zinc-600 via-zinc-500 to-zinc-800 shadow-black/40 hover:shadow-black/50",
     icon: (
       <div className="relative flex h-8 w-8 items-center justify-center text-white">
         <UserRound className="h-7 w-7" strokeWidth={iconStroke} aria-hidden />
@@ -40,7 +40,7 @@ const cards: Card[] = [
     href: "/cafe",
     title: "Café de Conexión",
     gradient:
-      "from-amber-400 via-orange-400 to-amber-600 shadow-amber-900/10 hover:shadow-amber-900/15",
+      "from-neutral-500 via-zinc-400 to-neutral-700 shadow-black/35 hover:shadow-black/45",
     icon: (
       <div className="flex items-end gap-1 text-white">
         <Coffee className="h-6 w-6" strokeWidth={iconStroke} aria-hidden />
@@ -56,7 +56,7 @@ const cards: Card[] = [
     href: "/actividad",
     title: "Actividad Semanal",
     gradient:
-      "from-violet-600 via-indigo-600 to-blue-700 shadow-violet-900/10 hover:shadow-violet-900/20",
+      "from-zinc-700 via-neutral-600 to-zinc-900 shadow-black/45 hover:shadow-black/55",
     icon: (
       <div className="relative flex h-8 w-8 items-center justify-center text-white">
         <ClipboardList className="h-7 w-7" strokeWidth={iconStroke} aria-hidden />
@@ -72,7 +72,7 @@ const cards: Card[] = [
     href: "/muro",
     title: "Muro para Compartir",
     gradient:
-      "from-emerald-500 via-teal-600 to-emerald-700 shadow-emerald-900/10 hover:shadow-emerald-900/15",
+      "from-neutral-600 via-zinc-500 to-neutral-800 shadow-black/40 hover:shadow-black/50",
     icon: (
       <div className="relative flex h-8 w-8 items-center justify-center text-white">
         <MessagesSquare className="h-7 w-7" strokeWidth={iconStroke} aria-hidden />
@@ -96,12 +96,12 @@ export function ActionGrid() {
         <Link
           key={card.href}
           href={card.href}
-          className={`group flex min-h-[108px] flex-col items-center justify-center gap-2.5 rounded-[1.35rem] bg-gradient-to-br px-2.5 py-3.5 text-center shadow-md shadow-black/10 ring-1 ring-white/50 transition hover:scale-[1.02] hover:shadow-lg active:scale-[0.99] ${card.gradient}`}
+          className={`group flex min-h-[108px] flex-col items-center justify-center gap-2.5 rounded-[1.35rem] bg-gradient-to-br px-2.5 py-3.5 text-center shadow-md ring-1 ring-white/15 transition hover:scale-[1.02] hover:shadow-lg active:scale-[0.99] ${card.gradient}`}
         >
-          <span className="flex h-[3.25rem] w-[3.25rem] items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/40">
+          <span className="flex h-[3.25rem] w-[3.25rem] items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/25">
             {card.icon}
           </span>
-          <span className="text-[0.8125rem] font-bold leading-tight text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)]">
+          <span className="text-[0.8125rem] font-bold leading-tight text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]">
             {card.title}
           </span>
         </Link>

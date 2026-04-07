@@ -1,10 +1,19 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { isAdminEmail } from "@/lib/conecta/admin-auth";
 import {
   CICLO_LUNES_COOKIE,
   getCicloLunesCookieValueForFirstVisit,
 } from "@/lib/conecta/semanal-week";
 import { getSupabasePublicConfig } from "@/lib/supabase/env";
+
+/** Rutas accesibles sin sesión (inicio, login y flujo OAuth). */
+function isPublicPath(pathname: string): boolean {
+  if (pathname === "/") return true;
+  if (pathname === "/login") return true;
+  if (pathname.startsWith("/auth/")) return true;
+  return false;
+}
 
 export async function updateSession(request: NextRequest) {
   let url: string;
@@ -41,9 +50,38 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
+
+  if (path.startsWith("/admin")) {
+    if (!user?.email) {
+      const loginUrl = request.nextUrl.clone();
+      loginUrl.pathname = "/login";
+      loginUrl.search = "";
+      const returnTo = `${request.nextUrl.pathname}${request.nextUrl.search}`;
+      loginUrl.searchParams.set("next", returnTo);
+      return NextResponse.redirect(loginUrl);
+    }
+    if (!isAdminEmail(user.email)) {
+      const home = request.nextUrl.clone();
+      home.pathname = "/";
+      home.search = "";
+      return NextResponse.redirect(home);
+    }
+  }
+
+  if (!isPublicPath(path) && !user) {
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = "/login";
+    loginUrl.search = "";
+    const returnTo = `${request.nextUrl.pathname}${request.nextUrl.search}`;
+    loginUrl.searchParams.set("next", returnTo);
+    return NextResponse.redirect(loginUrl);
+  }
+
   const cicloFijo = Boolean(process.env.ACTIVIDAD_SEMANAL_INICIO?.trim());
   if (
     (path.startsWith("/actividad") || path.startsWith("/conoce")) &&

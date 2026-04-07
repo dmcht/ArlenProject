@@ -191,40 +191,40 @@ export function ConoceClient({
 
   return (
     <div className="mt-8">
-      <div className="rounded-2xl border border-violet-200/80 bg-violet-50/80 px-4 py-3 text-center ring-1 ring-violet-100">
-        <p className="text-xs font-semibold uppercase tracking-wide text-violet-700">
+      <div className="rounded-2xl border border-zinc-600/60 bg-gradient-to-br from-zinc-800/90 to-zinc-950/90 px-4 py-3 text-center ring-1 ring-zinc-600/40">
+        <p className="text-xs font-semibold uppercase tracking-wide text-zinc-400">
           Esta semana
         </p>
-        <p className="mt-1 text-sm font-bold text-violet-900">
+        <p className="mt-1 text-sm font-bold text-zinc-50">
           {meta.semanaEtiqueta}
         </p>
-        <p className="mt-0.5 text-xs text-violet-700/80">
+        <p className="mt-0.5 text-xs text-zinc-400">
           Bloque {meta.actividadNumero} de 8 · mismo ciclo que la actividad semanal
         </p>
-        <p className="mt-3 border-t border-violet-200/60 pt-3 text-left text-[0.7rem] leading-snug text-violet-800/90">
+        <p className="mt-3 border-t border-zinc-600/50 pt-3 text-left text-[0.7rem] leading-snug text-zinc-300">
           {meta.detalleCiclo}
         </p>
       </div>
 
       {yaRespondiste ? (
         <div
-          className="mt-4 flex flex-col gap-1 rounded-2xl border border-emerald-200/90 bg-emerald-50/95 px-4 py-3 text-emerald-950 ring-1 ring-emerald-100"
+          className="mt-4 flex flex-col gap-1 rounded-2xl border border-zinc-600/80 bg-zinc-800/60 px-4 py-3 text-zinc-100 ring-1 ring-zinc-600/40"
           role="status"
         >
-          <p className="text-sm font-semibold text-emerald-900">
+          <p className="text-sm font-semibold text-zinc-50">
             Ya respondiste este bloque esta semana
           </p>
           {serverSavedLabel ? (
-            <p className="text-xs text-emerald-800/90">
+            <p className="text-xs text-zinc-400">
               Guardado en tu cuenta: {serverSavedLabel}
             </p>
           ) : isAuthenticated ? (
-            <p className="text-xs text-emerald-800/90">
+            <p className="text-xs text-zinc-400">
               Puedes seguir editando; los cambios se guardan al escribir o al salir
               de la página.
             </p>
           ) : (
-            <p className="text-xs text-emerald-800/90">
+            <p className="text-xs text-zinc-400">
               Borrador en este dispositivo. Inicia sesión para guardar en la nube.
             </p>
           )}
@@ -232,8 +232,8 @@ export function ConoceClient({
       ) : null}
 
       <ol className="mt-6">
-        <li className="rounded-2xl border border-violet-100 bg-white/95 p-5 shadow-sm ring-1 ring-violet-50">
-          <h2 className="text-sm font-bold uppercase tracking-wide text-violet-700">
+        <li className="rounded-2xl border border-zinc-700/80 bg-zinc-900/50 p-5 shadow-lg ring-1 ring-zinc-600/40">
+          <h2 className="text-sm font-bold uppercase tracking-wide text-zinc-200">
             Bloque {actividad.numero}
             {actividad.titulo ? ` · ${actividad.titulo}` : ""}
           </h2>
@@ -245,15 +245,15 @@ export function ConoceClient({
                 return (
                   <label
                     key={key}
-                    className="block text-left text-sm font-medium text-slate-700"
+                    className="block text-left text-sm font-medium text-zinc-300"
                   >
-                    <span className="mb-1.5 block text-slate-600">{pregunta}</span>
+                    <span className="mb-1.5 block text-zinc-400">{pregunta}</span>
                     <textarea
                       name={`conoce-${key}`}
                       rows={3}
                       value={answers[key] ?? ""}
                       onChange={(e) => updateField(key, e.target.value)}
-                      className="w-full resize-y rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2 text-sm text-slate-800 shadow-inner outline-none ring-violet-200 transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-2"
+                      className="w-full resize-y rounded-xl border border-zinc-600 bg-zinc-950/40 px-3 py-2 text-sm text-zinc-100 shadow-inner outline-none ring-zinc-500/30 transition placeholder:text-zinc-500 focus:border-zinc-400 focus:ring-2"
                       placeholder="Escribe una nota breve (opcional)…"
                     />
                   </label>
@@ -264,11 +264,11 @@ export function ConoceClient({
 
           {actividad.nota ? (
             <div className="mt-4">
-              <p className="text-sm font-medium leading-relaxed text-slate-800">
+              <p className="text-sm font-medium leading-relaxed text-zinc-200">
                 {actividad.nota}
               </p>
-              <label className="mt-3 block text-left text-sm font-medium text-slate-700">
-                <span className="mb-1.5 block text-slate-600">
+              <label className="mt-3 block text-left text-sm font-medium text-zinc-300">
+                <span className="mb-1.5 block text-zinc-400">
                   Tu reflexión o acuerdos
                 </span>
                 <textarea
@@ -276,14 +276,14 @@ export function ConoceClient({
                   rows={3}
                   value={answers["0"] ?? ""}
                   onChange={(e) => updateField("0", e.target.value)}
-                  className="w-full resize-y rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2 text-sm text-slate-800 shadow-inner outline-none ring-violet-200 transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-2"
+                  className="w-full resize-y rounded-xl border border-zinc-600 bg-zinc-950/40 px-3 py-2 text-sm text-zinc-100 shadow-inner outline-none ring-zinc-500/30 transition placeholder:text-zinc-500 focus:border-zinc-400 focus:ring-2"
                   placeholder="Opcional…"
                 />
               </label>
             </div>
           ) : null}
 
-          <div className="mt-5 flex flex-col gap-2 border-t border-violet-100 pt-4">
+          <div className="mt-5 flex flex-col gap-2 border-t border-zinc-700/60 pt-4">
             {isAuthenticated ? (
               <>
                 <div className="flex flex-wrap items-center gap-3">
@@ -291,30 +291,30 @@ export function ConoceClient({
                     type="button"
                     onClick={guardarAhora}
                     disabled={pending}
-                    className="rounded-xl bg-violet-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 disabled:opacity-60"
+                    className="rounded-xl bg-gradient-to-r from-zinc-300 via-zinc-100 to-zinc-400 px-4 py-2 text-sm font-semibold text-zinc-950 shadow-md shadow-black/30 transition hover:from-zinc-200 hover:via-white hover:to-zinc-300 disabled:opacity-60"
                   >
                     {pending ? "Guardando…" : "Guardar ahora"}
                   </button>
                   {savedAt ? (
-                    <span className="text-xs text-emerald-700">
+                    <span className="text-xs text-zinc-400">
                       Último guardado hoy · {savedAt}
                     </span>
                   ) : null}
                   {edited && !pending ? (
-                    <span className="text-xs text-slate-500">
+                    <span className="text-xs text-zinc-500">
                       Se guardará solo al dejar de escribir o al cambiar de página…
                     </span>
                   ) : null}
                 </div>
                 {error ? (
-                  <p className="text-xs text-red-600">{error}</p>
+                  <p className="text-xs text-red-400">{error}</p>
                 ) : null}
               </>
             ) : (
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-zinc-400">
                 <Link
                   href="/login"
-                  className="font-semibold text-violet-700 underline-offset-2 hover:underline"
+                  className="font-semibold text-white underline-offset-2 hover:underline"
                 >
                   Inicia sesión
                 </Link>{" "}

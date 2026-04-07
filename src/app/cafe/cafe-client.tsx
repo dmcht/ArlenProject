@@ -28,22 +28,22 @@ function PostCard({ post }: { post: CafePostPublic }) {
   });
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-amber-100/90 bg-white shadow-md shadow-amber-900/5 ring-1 ring-amber-50">
-      <div className="flex items-center gap-3 border-b border-amber-100/80 bg-gradient-to-r from-amber-50/90 to-orange-50/50 px-4 py-3">
+    <article className="overflow-hidden rounded-2xl border border-zinc-700/80 bg-zinc-900/50 shadow-lg shadow-black/30 ring-1 ring-zinc-600/40">
+      <div className="flex items-center gap-3 border-b border-zinc-700/60 bg-gradient-to-r from-zinc-800/90 to-zinc-900/80 px-4 py-3">
         <span
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-orange-500 text-sm font-bold text-white shadow-sm"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-zinc-500 to-zinc-700 text-sm font-bold text-white shadow-sm"
           aria-hidden
         >
           {post.authorLabel.slice(0, 1).toUpperCase()}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-amber-950">
+          <p className="truncate text-sm font-semibold text-zinc-50">
             {post.authorLabel}
           </p>
-          <p className="text-xs text-amber-800/70">{when}</p>
+          <p className="text-xs text-zinc-500">{when}</p>
         </div>
       </div>
-      <div className="relative aspect-[4/3] w-full bg-amber-100/40 sm:aspect-video">
+      <div className="relative aspect-[4/3] w-full bg-zinc-950 sm:aspect-video">
         <Image
           src={post.imageUrl}
           alt={post.caption || "Publicación del café de conexión"}
@@ -54,7 +54,7 @@ function PostCard({ post }: { post: CafePostPublic }) {
         />
       </div>
       {post.caption ? (
-        <p className="px-4 py-3 text-sm leading-relaxed text-slate-700">
+        <p className="px-4 py-3 text-sm leading-relaxed text-zinc-300">
           {post.caption}
         </p>
       ) : null}
@@ -66,28 +66,28 @@ function CafeSetupHelp({ loadError }: { loadError: CafePostsLoadError }) {
   const schemaIssue = loadError.isSchemaOrMissingTable;
   return (
     <div
-      className="rounded-2xl border border-amber-300/90 bg-amber-100/50 px-4 py-4 text-sm text-amber-950 ring-1 ring-amber-200/80"
+      className="rounded-2xl border border-zinc-600/80 bg-zinc-800/50 px-4 py-4 text-sm text-zinc-100 ring-1 ring-zinc-700/60"
       role="alert"
     >
-      <p className="font-bold text-amber-950">
+      <p className="font-bold">
         {schemaIssue
           ? "Falta la tabla en Supabase o la API no la ve todavía"
           : "No se pudo cargar el muro"}
       </p>
       {loadError.code ? (
-        <p className="mt-1 font-mono text-xs text-amber-900/80">
+        <p className="mt-1 font-mono text-xs text-zinc-400">
           {loadError.code}: {loadError.message}
         </p>
       ) : (
-        <p className="mt-1 text-xs text-amber-900/80">{loadError.message}</p>
+        <p className="mt-1 text-xs text-zinc-400">{loadError.message}</p>
       )}
       {schemaIssue ? (
-        <ol className="mt-3 list-decimal space-y-2 pl-5 text-[0.8125rem] leading-relaxed text-amber-950/95">
+        <ol className="mt-3 list-decimal space-y-2 pl-5 text-[0.8125rem] leading-relaxed text-zinc-300">
           <li>
             Abre el{" "}
             <strong>mismo proyecto</strong> de Supabase que usa tu{" "}
-            <code className="rounded bg-amber-200/60 px-1">.env</code> (
-            <code className="rounded bg-amber-200/60 px-1">
+            <code className="rounded bg-zinc-900/80 px-1 text-zinc-200">.env</code> (
+            <code className="rounded bg-zinc-900/80 px-1 text-zinc-200">
               NEXT_PUBLIC_SUPABASE_URL
             </code>
             ).
@@ -95,24 +95,24 @@ function CafeSetupHelp({ loadError }: { loadError: CafePostsLoadError }) {
           <li>
             Ve a <strong>SQL</strong> → New query → pega y ejecuta{" "}
             <strong>todo</strong> el archivo{" "}
-            <code className="rounded bg-amber-200/60 px-1">
+            <code className="rounded bg-zinc-900/80 px-1 text-zinc-200">
               supabase/migrations/20260411100000_cafe_de_conexion.sql
             </code>
             .
           </li>
           <li>
             En <strong>Table Editor</strong> comprueba que exista la tabla{" "}
-            <code className="rounded bg-amber-200/60 px-1">cafe_posts</code>.
+            <code className="rounded bg-zinc-900/80 px-1 text-zinc-200">cafe_posts</code>.
           </li>
           <li>
             Ejecuta otra vez en SQL:{" "}
-            <code className="mt-1 block rounded bg-amber-200/60 px-2 py-1 text-xs">
+            <code className="mt-1 block rounded bg-zinc-900/80 px-2 py-1 text-xs text-zinc-200">
               {`select pg_notify('pgrst', 'reload schema');`}
             </code>
           </li>
           <li>
             Si sigue igual: <strong>Project Settings → Data API</strong> → revisa
-            que el esquema <code className="rounded bg-amber-200/60 px-1">public</code>{" "}
+            que el esquema <code className="rounded bg-zinc-900/80 px-1 text-zinc-200">public</code>{" "}
             esté expuesto; prueba desactivar y volver a activar la Data API.
           </li>
         </ol>
@@ -146,16 +146,16 @@ export function CafeClient({
       {loadError ? <CafeSetupHelp loadError={loadError} /> : null}
       {isAuthenticated ? (
         <section
-          className="rounded-2xl border border-amber-200/80 bg-white/90 p-5 shadow-sm ring-1 ring-amber-100/80"
+          className="rounded-2xl border border-zinc-700/80 bg-zinc-900/50 p-5 shadow-lg ring-1 ring-zinc-600/40"
           aria-labelledby="cafe-nuevo"
         >
           <h2
             id="cafe-nuevo"
-            className="text-sm font-bold uppercase tracking-wide text-amber-800"
+            className="text-sm font-bold uppercase tracking-wide text-zinc-200"
           >
             Nueva publicación
           </h2>
-          <p className="mt-1 text-sm text-slate-600">
+          <p className="mt-1 text-sm text-zinc-400">
             Sube una foto de tu café de conexión y, si quieres, añade un mensaje
             corto.
           </p>
@@ -163,7 +163,7 @@ export function CafeClient({
             <div>
               <label
                 htmlFor="cafe-image"
-                className="block text-xs font-semibold text-amber-900"
+                className="block text-xs font-semibold text-zinc-300"
               >
                 Imagen
               </label>
@@ -173,13 +173,13 @@ export function CafeClient({
                 type="file"
                 accept="image/jpeg,image/png,image/webp,image/gif"
                 required
-                className="mt-1.5 block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-amber-500 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-amber-600"
+                className="mt-1.5 block w-full text-sm text-zinc-400 file:mr-3 file:rounded-lg file:border-0 file:bg-gradient-to-r file:from-zinc-400 file:to-zinc-300 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-zinc-950 hover:file:from-zinc-300 hover:file:to-zinc-200"
               />
             </div>
             <div>
               <label
                 htmlFor="cafe-caption"
-                className="block text-xs font-semibold text-amber-900"
+                className="block text-xs font-semibold text-zinc-300"
               >
                 Mensaje (opcional)
               </label>
@@ -189,33 +189,33 @@ export function CafeClient({
                 rows={2}
                 maxLength={500}
                 placeholder="¿Qué estás compartiendo hoy?"
-                className="mt-1.5 w-full rounded-xl border border-amber-200 bg-amber-50/30 px-3 py-2 text-sm text-slate-800 outline-none ring-amber-200 placeholder:text-slate-400 focus:border-amber-400 focus:ring-2"
+                className="mt-1.5 w-full rounded-xl border border-zinc-600 bg-zinc-950/40 px-3 py-2 text-sm text-zinc-100 outline-none ring-zinc-500/30 placeholder:text-zinc-500 focus:border-zinc-400 focus:ring-2"
               />
             </div>
             {state && !state.ok && state.error ? (
-              <p className="text-sm text-red-600" role="alert">
+              <p className="text-sm text-red-400" role="alert">
                 {state.error}
               </p>
             ) : null}
             {state?.ok ? (
-              <p className="text-sm font-medium text-emerald-700" role="status">
+              <p className="text-sm font-medium text-zinc-300" role="status">
                 ¡Publicado! Ya aparece abajo.
               </p>
             ) : null}
             <button
               type="submit"
               disabled={pending}
-              className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-amber-900/15 transition hover:from-amber-600 hover:to-orange-600 disabled:opacity-60"
+              className="rounded-xl bg-gradient-to-r from-zinc-300 via-zinc-100 to-zinc-400 px-5 py-2.5 text-sm font-bold text-zinc-950 shadow-md shadow-black/30 hover:from-zinc-200 hover:via-white hover:to-zinc-300 disabled:opacity-60"
             >
               {pending ? "Publicando…" : "Publicar"}
             </button>
           </form>
         </section>
       ) : (
-        <p className="rounded-2xl border border-amber-200/70 bg-amber-50/80 px-4 py-3 text-sm text-amber-950">
+        <p className="rounded-2xl border border-zinc-700/60 bg-zinc-800/40 px-4 py-3 text-sm text-zinc-200">
           <Link
             href="/login"
-            className="font-semibold text-amber-800 underline-offset-2 hover:underline"
+            className="font-semibold text-white underline-offset-2 hover:underline"
           >
             Inicia sesión
           </Link>{" "}
@@ -226,20 +226,20 @@ export function CafeClient({
       <section aria-labelledby="cafe-muro">
         <h2
           id="cafe-muro"
-          className="text-lg font-bold text-slate-800"
+          className="text-lg font-bold text-zinc-50"
         >
           Muro del café
         </h2>
         {!isAuthenticated ? (
-          <p className="mt-2 text-sm text-slate-600">
+          <p className="mt-2 text-sm text-zinc-400">
             El contenido solo está disponible para usuarios registrados.
           </p>
         ) : loadError ? (
-          <p className="mt-3 text-sm text-slate-600">
+          <p className="mt-3 text-sm text-zinc-400">
             Cuando la base esté lista, las publicaciones aparecerán aquí.
           </p>
         ) : posts.length === 0 ? (
-          <p className="mt-3 text-sm text-slate-600">
+          <p className="mt-3 text-sm text-zinc-400">
             Aún no hay publicaciones. ¡Sé el primero en compartir un momento!
           </p>
         ) : (

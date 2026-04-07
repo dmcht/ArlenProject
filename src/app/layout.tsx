@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
+import { SiteFooter } from "@/components/site-footer";
 import "./globals.css";
 
 const nunito = Nunito({
@@ -20,7 +21,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${nunito.variable} h-full antialiased`}>
-      <body className="flex min-h-screen flex-col font-sans">{children}</body>
+      <body className="flex min-h-screen flex-col bg-zinc-950 font-sans text-zinc-100 antialiased">
+        <div className="flex flex-1 flex-col">{children}</div>
+        <SiteFooter />
+      </body>
     </html>
   );
 }

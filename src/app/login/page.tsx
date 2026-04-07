@@ -7,16 +7,28 @@ export const metadata: Metadata = {
   description: "Accede a Conecta Platino",
 };
 
-export default function LoginPage() {
+function safeRedirectNext(raw: string | undefined): string | undefined {
+  if (!raw || !raw.startsWith("/") || raw.startsWith("//")) return undefined;
+  return raw;
+}
+
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const sp = await searchParams;
+  const next = safeRedirectNext(sp.next);
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-sky-200/80 via-sky-100 to-[#dff5eb] px-4 py-10">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-zinc-950 via-neutral-950 to-black px-4 py-10">
       <Link
         href="/"
-        className="mb-6 text-sm font-semibold text-sky-800 hover:underline"
+        className="mb-6 text-sm font-semibold text-zinc-400 hover:text-white hover:underline"
       >
         ← Conecta Platino
       </Link>
-      <LoginForm />
+      <LoginForm redirectAfterLogin={next ?? "/"} />
     </div>
   );
 }

@@ -26,19 +26,19 @@ const STATS_META: {
     key: "charlas",
     label: "Charlas Realizadas",
     icon: MessagesSquare,
-    className: "text-sky-600",
+    className: "text-zinc-300",
   },
   {
     key: "cafes",
     label: "Cafés Participados",
     icon: Coffee,
-    className: "text-amber-600",
+    className: "text-zinc-400",
   },
   {
     key: "reconocimientos",
     label: "Reconocimientos Dados",
     icon: Star,
-    className: "text-amber-500",
+    className: "text-zinc-200",
     fillIcon: true,
   },
 ];
@@ -53,23 +53,23 @@ const BADGES_META: {
   {
     id: "team_connector",
     label: "Conector del Equipo",
-    border: "border-sky-400",
+    border: "border-zinc-500",
     icon: UsersRound,
-    className: "text-sky-600",
+    className: "text-zinc-300",
   },
   {
     id: "active_listening",
     label: "Escucha Activa",
-    border: "border-emerald-400",
+    border: "border-zinc-400",
     icon: Ear,
-    className: "text-emerald-600",
+    className: "text-zinc-400",
   },
   {
     id: "supportive_peer",
     label: "Compañero Solidario",
-    border: "border-blue-400",
+    border: "border-neutral-500",
     icon: Handshake,
-    className: "text-blue-600",
+    className: "text-zinc-200",
   },
 ];
 
@@ -78,14 +78,14 @@ export function ProgressSection({ data }: { data: UserProgressPayload }) {
 
   return (
     <section className="relative z-10 w-full">
-      <div className="rounded-[1.75rem] bg-white p-5 shadow-md shadow-slate-400/15 ring-1 ring-slate-200/60">
-        <h2 className="mb-5 text-center text-lg font-bold text-slate-800">
+      <div className="rounded-[1.75rem] border border-zinc-700/80 bg-zinc-900/60 p-5 shadow-lg shadow-black/30 ring-1 ring-zinc-600/40 backdrop-blur-sm">
+        <h2 className="mb-5 text-center text-lg font-bold text-zinc-50">
           Mi Progreso
         </h2>
 
         {!data.isAuthenticated ? (
-          <p className="mb-4 rounded-xl bg-sky-50 px-3 py-2 text-center text-xs font-medium text-sky-800">
-            <Link href="/login" className="font-semibold underline underline-offset-2">
+          <p className="mb-4 rounded-xl border border-zinc-700/60 bg-zinc-800/50 px-3 py-2 text-center text-xs font-medium text-zinc-300">
+            <Link href="/login" className="font-semibold text-white underline underline-offset-2">
               Inicia sesión
             </Link>{" "}
             para ver y guardar tu progreso en la base de datos.
@@ -96,7 +96,7 @@ export function ProgressSection({ data }: { data: UserProgressPayload }) {
           {STATS_META.map(({ key, label, icon: Icon, className, fillIcon }, i) => (
             <div
               key={key}
-              className={`flex flex-col items-center px-1 py-1 text-center ${i > 0 ? "border-l border-slate-200" : ""}`}
+              className={`flex flex-col items-center px-1 py-1 text-center ${i > 0 ? "border-l border-zinc-700/80" : ""}`}
             >
               <Icon
                 className={`mb-1.5 h-8 w-8 ${className}`}
@@ -104,17 +104,17 @@ export function ProgressSection({ data }: { data: UserProgressPayload }) {
                 fill={fillIcon ? "currentColor" : "none"}
                 aria-hidden
               />
-              <span className="text-2xl font-extrabold tabular-nums text-slate-800">
+              <span className="text-2xl font-extrabold tabular-nums text-white">
                 {data[key]}
               </span>
-              <span className="mt-1.5 max-w-[6.5rem] text-xs font-semibold leading-snug text-slate-600">
+              <span className="mt-1.5 max-w-[6.5rem] text-xs font-semibold leading-snug text-zinc-400">
                 {label}
               </span>
             </div>
           ))}
         </div>
 
-        <div className="mt-6 flex justify-between gap-1 border-t border-slate-100 pt-5 sm:gap-2">
+        <div className="mt-6 flex justify-between gap-1 border-t border-zinc-700/60 pt-5 sm:gap-2">
           {BADGES_META.map(
             ({ id, label, border, icon: Icon, className }) => {
               const unlocked = earned.has(id);
@@ -124,7 +124,7 @@ export function ProgressSection({ data }: { data: UserProgressPayload }) {
                   className="flex flex-1 flex-col items-center gap-2 text-center"
                 >
                   <div
-                    className={`flex h-[3.25rem] w-[3.25rem] items-center justify-center rounded-full border-[2.5px] bg-gradient-to-b from-slate-50 to-white shadow-sm transition-opacity ${border} ${unlocked ? "" : "opacity-35"}`}
+                    className={`flex h-[3.25rem] w-[3.25rem] items-center justify-center rounded-full border-[2.5px] bg-gradient-to-b from-zinc-800 to-zinc-900 shadow-sm transition-opacity ${border} ${unlocked ? "" : "opacity-35"}`}
                   >
                     <Icon
                       className={`h-6 w-6 ${className}`}
@@ -133,7 +133,7 @@ export function ProgressSection({ data }: { data: UserProgressPayload }) {
                     />
                   </div>
                   <span
-                    className={`max-w-[5.5rem] text-[0.7rem] font-bold leading-tight sm:text-xs ${unlocked ? "text-slate-600" : "text-slate-400"}`}
+                    className={`max-w-[5.5rem] text-[0.7rem] font-bold leading-tight sm:text-xs ${unlocked ? "text-zinc-300" : "text-zinc-600"}`}
                   >
                     {label}
                   </span>
@@ -143,9 +143,9 @@ export function ProgressSection({ data }: { data: UserProgressPayload }) {
           )}
         </div>
 
-        <p className="mt-5 rounded-2xl bg-sky-50/90 px-4 py-3 text-center text-sm font-medium leading-relaxed text-slate-700">
-          <span className="font-bold text-sky-700">Frase del día: </span>
-          <span className="italic text-slate-600">
+        <p className="mt-5 rounded-2xl border border-zinc-700/50 bg-zinc-800/40 px-4 py-3 text-center text-sm font-medium leading-relaxed text-zinc-300">
+          <span className="font-bold text-zinc-100">Frase del día: </span>
+          <span className="italic text-zinc-400">
             &ldquo;{data.quote}&rdquo;
           </span>
         </p>

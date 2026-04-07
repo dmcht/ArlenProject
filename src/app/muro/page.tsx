@@ -1,16 +1,50 @@
 import Link from "next/link";
+import { getMuroFeed } from "@/lib/conecta/get-muro-feed";
+import { createClient } from "@/lib/supabase/server";
+import { MuroClient } from "./muro-client";
 
-export default function MuroPage() {
+export const dynamic = "force-dynamic";
+
+export default async function MuroPage() {
+  let supabase;
+  try {
+    supabase = await createClient();
+  } catch {
+    supabase = null;
+  }
+
+  const user = supabase
+    ? (await supabase.auth.getUser()).data.user
+    : null;
+
+  const { posts, loadError } =
+    supabase && user ? await getMuroFeed(supabase) : { posts: [], loadError: null };
+
   return (
-    <div className="min-h-full bg-gradient-to-b from-emerald-50 to-white px-6 py-10">
-      <Link
-        href="/"
-        className="text-sm font-semibold text-emerald-700 underline-offset-4 hover:underline"
-      >
-        ← Volver al inicio
-      </Link>
-      <h1 className="mt-6 text-2xl font-bold text-slate-800">Muro para Compartir</h1>
-      <p className="mt-2 text-slate-600">Contenido próximamente.</p>
+    <div className="min-h-full bg-gradient-to-b from-zinc-950 via-neutral-950 to-black px-4 py-8 pb-14 sm:px-6">
+      <div className="mx-auto max-w-lg">
+        <Link
+          href="/"
+          className="inline-flex text-sm font-semibold text-zinc-400 underline-offset-4 hover:text-white hover:underline"
+        >
+          ← Volver al inicio
+        </Link>
+        <h1 className="mt-6 text-2xl font-extrabold tracking-tight text-zinc-50 sm:text-[1.65rem]">
+          Muro para compartir
+        </h1>
+        <p className="mt-3 text-sm font-medium leading-relaxed text-zinc-400">
+          Un espacio para reflexiones y pensamientos. Lee lo que comparte el
+          equipo y deja un comentario para seguir la conversación.
+        </p>
+        <div className="mt-8">
+          <MuroClient
+            key={posts.map((p) => p.id).join(",") || "vacío"}
+            posts={posts}
+            loadError={loadError}
+            isAuthenticated={!!user}
+          />
+        </div>
+      </div>
     </div>
   );
 }

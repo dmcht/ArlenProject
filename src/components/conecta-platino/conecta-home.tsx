@@ -6,7 +6,7 @@ import { SkyHeader } from "./sky-header";
 
 export function ConectaHome({ progress }: { progress: UserProgressPayload }) {
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-b from-sky-200/80 via-sky-100 to-[#dff5eb]">
+    <div className="flex min-h-screen flex-col bg-gradient-to-b from-zinc-950 via-neutral-950 to-black">
       <SkyHeader userEmail={progress.userEmail} />
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-5 px-4 pb-5 sm:px-5">
         <ActionGrid />
