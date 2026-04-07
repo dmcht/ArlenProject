@@ -1,16 +1,52 @@
 import Link from "next/link";
+import { getCafePosts } from "@/lib/conecta/get-cafe-posts";
+import { createClient } from "@/lib/supabase/server";
+import { CafeClient } from "./cafe-client";
 
-export default function CafePage() {
+export const dynamic = "force-dynamic";
+
+export default async function CafePage() {
+  let supabase;
+  try {
+    supabase = await createClient();
+  } catch {
+    supabase = null;
+  }
+
+  const user = supabase
+    ? (await supabase.auth.getUser()).data.user
+    : null;
+
+  const { posts, loadError } =
+    supabase && user
+      ? await getCafePosts(supabase)
+      : { posts: [], loadError: null };
+
   return (
-    <div className="min-h-full bg-gradient-to-b from-amber-50 to-white px-6 py-10">
-      <Link
-        href="/"
-        className="text-sm font-semibold text-amber-800 underline-offset-4 hover:underline"
-      >
-        ← Volver al inicio
-      </Link>
-      <h1 className="mt-6 text-2xl font-bold text-slate-800">Café de Conexión</h1>
-      <p className="mt-2 text-slate-600">Contenido próximamente.</p>
+    <div className="min-h-full bg-gradient-to-b from-amber-50 via-orange-50/30 to-white px-4 py-8 pb-14 sm:px-6">
+      <div className="mx-auto max-w-lg">
+        <Link
+          href="/"
+          className="inline-flex text-sm font-semibold text-amber-900 underline-offset-4 hover:underline"
+        >
+          ← Volver al inicio
+        </Link>
+        <h1 className="mt-6 text-2xl font-extrabold tracking-tight text-amber-950 sm:text-[1.65rem]">
+          Café de conexión
+        </h1>
+        <p className="mt-3 text-sm font-medium leading-relaxed text-slate-600">
+          Comparte una foto de tu encuentro: se muestra como una publicación en
+          el muro para que el equipo celebre esos momentos.
+        </p>
+        <div className="mt-8">
+          <CafeClient
+            key={posts.map((p) => p.id).join(",") || "sin-posts"}
+            posts={posts}
+            loadError={loadError}
+            isAuthenticated={!!user}
+          />
+        </div>
+      </div>
     </div>
   );
 }

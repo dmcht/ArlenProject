@@ -1,52 +1,102 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import {
   CONOCE_ACTIVIDADES,
   CONOCE_INTRO,
 } from "@/data/conoce-companero";
+import {
+  CICLO_LUNES_COOKIE,
+  getSemanalActivityIndex,
+  getSemanalWeekMeta,
+  isoWeekMondayYmd,
+} from "@/lib/conecta/semanal-week";
+import { createClient } from "@/lib/supabase/server";
+import { ConoceClient } from "./conoce-client";
 
-export default function ConocePage() {
+export const dynamic = "force-dynamic";
+
+export default async function ConocePage() {
+  const jar = await cookies();
+  const cicloLunesCookie = jar.get(CICLO_LUNES_COOKIE)?.value ?? null;
+  const opts = { cicloLunesCookie };
+  const idx = getSemanalActivityIndex(undefined, opts);
+  const meta = getSemanalWeekMeta(undefined, opts);
+  const actividad = CONOCE_ACTIVIDADES[idx];
+  const weekLunes = isoWeekMondayYmd();
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let initialAnswers: Record<string, string> | null = null;
+  let serverSyncToken = `${weekLunes}:guest`;
+  let hasServerResponses = false;
+  let serverSavedLabel: string | null = null;
+
+  if (user) {
+    const { data, error } = await supabase
+      .from("conoce_respuestas")
+      .select("answers, updated_at")
+      .eq("user_id", user.id)
+      .eq("week_lunes_ymd", weekLunes)
+      .maybeSingle();
+
+    if (!error && data) {
+      const raw = data.answers;
+      if (raw != null && typeof raw === "object" && !Array.isArray(raw)) {
+        const normalized: Record<string, string> = {};
+        for (const [k, v] of Object.entries(raw)) {
+          if (v != null) normalized[k] = String(v);
+        }
+        initialAnswers = normalized;
+        hasServerResponses = Object.values(normalized).some(
+          (v) => v.trim().length > 0,
+        );
+      }
+      const updated = data.updated_at;
+      serverSyncToken = `${weekLunes}:${updated ?? "none"}`;
+      if (updated && hasServerResponses) {
+        serverSavedLabel = new Intl.DateTimeFormat("es-MX", {
+          dateStyle: "medium",
+          timeStyle: "short",
+        }).format(new Date(updated));
+      }
+    } else {
+      serverSyncToken = `${weekLunes}:none`;
+    }
+  }
+
   return (
-    <div className="min-h-full bg-gradient-to-b from-sky-100 via-white to-sky-50/50 px-4 py-8 pb-12 sm:px-6">
+    <div className="min-h-full bg-gradient-to-b from-violet-50 via-white to-indigo-50/40 px-4 py-8 pb-12 sm:px-6">
       <div className="mx-auto max-w-lg">
         <Link
           href="/"
-          className="inline-flex text-sm font-semibold text-sky-700 underline-offset-4 hover:underline"
+          className="inline-flex text-sm font-semibold text-violet-700 underline-offset-4 hover:underline"
         >
           ← Volver al inicio
         </Link>
 
-        <h1 className="mt-6 text-2xl font-extrabold tracking-tight text-sky-800 sm:text-[1.65rem]">
+        <h1 className="mt-6 text-2xl font-extrabold tracking-tight text-violet-900 sm:text-[1.65rem]">
           Conocer al compañero
         </h1>
         <p className="mt-3 text-sm font-medium leading-relaxed text-slate-600">
-          {CONOCE_INTRO}
+          {CONOCE_INTRO} Cada semana verás un bloque de temas (1…8), alineado con el
+          ciclo de la actividad semanal. Anota lo que quieras recordar; con sesión
+          iniciada se guarda en tu cuenta.
         </p>
 
-        <ol className="mt-8 space-y-5">
-          {CONOCE_ACTIVIDADES.map((act) => (
-            <li
-              key={act.numero}
-              className="rounded-2xl border border-sky-100 bg-white/90 p-5 shadow-sm ring-1 ring-sky-50"
-            >
-              <h2 className="text-sm font-bold uppercase tracking-wide text-sky-600">
-                Actividad {act.numero}
-                {act.titulo ? ` · ${act.titulo}` : ""}
-              </h2>
-              {act.preguntas.length > 0 ? (
-                <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-relaxed text-slate-700">
-                  {act.preguntas.map((p) => (
-                    <li key={p}>{p}</li>
-                  ))}
-                </ul>
-              ) : null}
-              {act.nota ? (
-                <p className="mt-3 text-sm font-medium leading-relaxed text-slate-800">
-                  {act.nota}
-                </p>
-              ) : null}
-            </li>
-          ))}
-        </ol>
+        <ConoceClient
+          key={serverSyncToken}
+          actividad={actividad}
+          meta={meta}
+          activityIndex={idx}
+          weekLunesYmd={weekLunes}
+          initialAnswers={initialAnswers}
+          hasServerResponses={hasServerResponses}
+          serverSavedLabel={serverSavedLabel}
+          isAuthenticated={!!user}
+        />
       </div>
     </div>
   );

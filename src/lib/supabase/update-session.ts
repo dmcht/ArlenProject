@@ -35,6 +35,10 @@ export async function updateSession(request: NextRequest) {
         );
       },
     },
+    global: {
+      fetch: (input, init) =>
+        fetch(input, { ...init, cache: "no-store" }),
+    },
   });
 
   await supabase.auth.getUser();
@@ -42,7 +46,7 @@ export async function updateSession(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const cicloFijo = Boolean(process.env.ACTIVIDAD_SEMANAL_INICIO?.trim());
   if (
-    path.startsWith("/actividad") &&
+    (path.startsWith("/actividad") || path.startsWith("/conoce")) &&
     !cicloFijo &&
     !request.cookies.get(CICLO_LUNES_COOKIE)
   ) {
