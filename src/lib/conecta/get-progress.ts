@@ -10,7 +10,8 @@ export type UserProgressPayload = {
   userEmail: string | null;
 };
 
-const FALLBACK_QUOTE = "Una buena amistad mejora el trabajo.";
+const FALLBACK_QUOTE =
+  "Un buen trabajo fortalece una buena amistad";
 
 function todayUtcDateString(): string {
   return new Date().toISOString().slice(0, 10);

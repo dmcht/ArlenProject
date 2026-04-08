@@ -12,6 +12,7 @@ import {
   AdminWeekPill,
 } from "@/app/admin/_components/admin-chrome";
 import {
+  isInvalidSupabaseApiKeyError,
   isMissingServiceRoleConfigError,
   isSemanalEleccionesTableOrSchemaError,
 } from "@/lib/conecta/admin/admin-load-messages";
@@ -70,8 +71,25 @@ export default async function AdminActividadSemanalPage() {
             </p>
           ) : null}
 
+          {isInvalidSupabaseApiKeyError(loadError) ? (
+            <div className="mt-3 space-y-2 border-t border-zinc-600/60 pt-3 text-xs text-zinc-300">
+              <p>
+                La clave <AdminCode>service_role</AdminCode> no es válida para este
+                proyecto (copia incompleta, clave antigua o equivocada con la{" "}
+                <AdminCode>anon</AdminCode>).
+              </p>
+              <p>
+                En Supabase → Settings → API, copia de nuevo{" "}
+                <strong className="text-zinc-200">service_role</strong> (secreta) a{" "}
+                <AdminCode>SUPABASE_SERVICE_ROLE_KEY</AdminCode> en el servidor,
+                guarda y reinicia la app.
+              </p>
+            </div>
+          ) : null}
+
           {!isSemanalEleccionesTableOrSchemaError(loadError) &&
-          !isMissingServiceRoleConfigError(loadError) ? (
+          !isMissingServiceRoleConfigError(loadError) &&
+          !isInvalidSupabaseApiKeyError(loadError) ? (
             <p className="mt-3 border-t border-zinc-600/60 pt-3 text-xs text-zinc-400">
               Si acabas de cambiar la configuración del servidor, reinícialo.
             </p>

@@ -5,7 +5,7 @@ import { isAdminEmail } from "@/lib/conecta/admin-auth";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "Administración | Conecta Platino",
+  title: "Administración | Platino Conecta",
   robots: { index: false, follow: false },
 };
 

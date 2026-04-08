@@ -10,7 +10,7 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "Conecta Platino",
+  title: "Platino Conecta",
   description: "Comunicación que nos une — plataforma interna",
 };
 

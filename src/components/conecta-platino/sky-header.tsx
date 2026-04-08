@@ -54,15 +54,15 @@ export function SkyHeader({
           <Image
             src="/grupo-platino-logo.png"
             alt="Grupo Platino"
-            width={220}
-            height={88}
-            className="h-16 w-auto max-w-[min(100%,16rem)] object-contain"
+            width={320}
+            height={128}
+            className="h-24 w-auto max-w-[min(100%,22rem)] object-contain sm:h-28"
             priority
           />
         </div>
 
         <h1 className="text-2xl font-extrabold tracking-tight text-white drop-shadow-sm sm:text-[1.75rem]">
-          Conecta Platino
+          Platino Conecta
         </h1>
         <p className="mt-1 text-sm font-semibold text-zinc-300">
           Comunicación que nos une

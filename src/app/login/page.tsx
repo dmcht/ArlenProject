@@ -3,8 +3,8 @@ import Link from "next/link";
 import { LoginForm } from "./login-form";
 
 export const metadata: Metadata = {
-  title: "Iniciar sesión | Conecta Platino",
-  description: "Accede a Conecta Platino",
+  title: "Iniciar sesión | Platino Conecta",
+  description: "Accede a Platino Conecta",
 };
 
 function safeRedirectNext(raw: string | undefined): string | undefined {
@@ -26,7 +26,7 @@ export default async function LoginPage({
         href="/"
         className="mb-6 text-sm font-semibold text-zinc-400 hover:text-white hover:underline"
       >
-        ← Conecta Platino
+        ← Platino Conecta
       </Link>
       <LoginForm redirectAfterLogin={next ?? "/"} />
     </div>
