@@ -1,5 +1,7 @@
 import Image from "next/image";
+import type { NotificationPublic } from "@/lib/conecta/get-notifications";
 import { HeaderAccountMenu } from "./header-account-menu";
+import { NotificationsBell } from "./notifications-bell";
 
 function PlatinumGlow({ className }: { className?: string }) {
   return (
@@ -14,10 +16,15 @@ export function SkyHeader({
   userEmail,
   avatarUrl = null,
   displayName = "Usuario",
+  notifications = null,
 }: {
   userEmail: string | null;
   avatarUrl?: string | null;
   displayName?: string;
+  notifications?: {
+    items: NotificationPublic[];
+    unreadCount: number;
+  } | null;
 }) {
   return (
     <header className="relative px-4 pb-7 pt-9 sm:px-5">
@@ -27,7 +34,13 @@ export function SkyHeader({
         <PlatinumGlow className="right-[8%] top-12 h-20 w-32 opacity-80" />
       </div>
 
-      <div className="absolute right-2 top-3 z-30 sm:right-4">
+      <div className="absolute right-2 top-3 z-30 flex items-start gap-2 sm:right-4">
+        {userEmail && notifications ? (
+          <NotificationsBell
+            initialItems={notifications.items}
+            initialUnreadCount={notifications.unreadCount}
+          />
+        ) : null}
         <HeaderAccountMenu
           userEmail={userEmail}
           avatarUrl={avatarUrl}

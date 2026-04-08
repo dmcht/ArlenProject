@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { NotificationsBell } from "@/components/conecta-platino/notifications-bell";
 import { getCafePosts } from "@/lib/conecta/get-cafe-posts";
+import { getNotificationsForUser } from "@/lib/conecta/get-notifications";
 import { createClient } from "@/lib/supabase/server";
 import { CafeClient } from "./cafe-client";
 
@@ -22,15 +24,28 @@ export default async function CafePage() {
       ? await getCafePosts(supabase)
       : { posts: [], loadError: null };
 
+  const notifications =
+    supabase && user
+      ? await getNotificationsForUser(supabase, user.id)
+      : { items: [], unreadCount: 0 };
+
   return (
     <div className="min-h-full bg-gradient-to-b from-zinc-950 via-neutral-950 to-black px-4 py-8 pb-14 sm:px-6">
       <div className="mx-auto max-w-lg">
-        <Link
-          href="/"
-          className="inline-flex text-sm font-semibold text-zinc-400 underline-offset-4 hover:text-white hover:underline"
-        >
-          ← Volver al inicio
-        </Link>
+        <div className="flex items-start justify-between gap-3">
+          <Link
+            href="/"
+            className="inline-flex text-sm font-semibold text-zinc-400 underline-offset-4 hover:text-white hover:underline"
+          >
+            ← Volver al inicio
+          </Link>
+          {user ? (
+            <NotificationsBell
+              initialItems={notifications.items}
+              initialUnreadCount={notifications.unreadCount}
+            />
+          ) : null}
+        </div>
         <h1 className="mt-6 text-2xl font-extrabold tracking-tight text-zinc-50 sm:text-[1.65rem]">
           Café de conexión
         </h1>

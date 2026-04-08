@@ -281,7 +281,10 @@ function CafePostRow({
   }
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-zinc-700/80 bg-zinc-900/50 shadow-lg shadow-black/30 ring-1 ring-zinc-600/40">
+    <article
+      id={`cafe-post-${post.id}`}
+      className="scroll-mt-24 overflow-hidden rounded-2xl border border-zinc-700/80 bg-zinc-900/50 shadow-lg shadow-black/30 ring-1 ring-zinc-600/40"
+    >
       <div className="flex items-center gap-3 border-b border-zinc-700/60 bg-gradient-to-r from-zinc-800/90 to-zinc-900/80 px-4 py-3">
         <UserAvatar
           avatarUrl={post.authorAvatarUrl}
@@ -473,6 +476,14 @@ function CafeSetupHelp({ loadError }: { loadError: CafePostsLoadError }) {
             .
           </li>
           <li>
+            Para <strong>notificaciones</strong> (publicaciones, me gusta,
+            comentarios):{" "}
+            <code className="rounded bg-zinc-900/80 px-1 text-zinc-200">
+              supabase/migrations/20260418120000_cafe_notifications.sql
+            </code>
+            .
+          </li>
+          <li>
             Ejecuta otra vez en SQL:{" "}
             <code className="mt-1 block rounded bg-zinc-900/80 px-2 py-1 text-xs text-zinc-200">
               {`select pg_notify('pgrst', 'reload schema');`}
@@ -510,6 +521,19 @@ export function CafeClient({
       router.refresh();
     }
   }, [state, router]);
+
+  const postIdsKey = posts.map((p) => p.id).join(",");
+
+  useEffect(() => {
+    const hash = window.location.hash.replace(/^#/, "");
+    if (!hash.startsWith("cafe-post-")) return;
+    requestAnimationFrame(() => {
+      document.getElementById(hash)?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    });
+  }, [postIdsKey]);
 
   return (
     <div className="space-y-10">
