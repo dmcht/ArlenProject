@@ -1,6 +1,15 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { avatarPublicUrl } from "@/lib/conecta/avatar-public-url";
 
+export type CafeCommentPublic = {
+  id: string;
+  userId: string;
+  authorLabel: string;
+  authorAvatarUrl: string | null;
+  body: string;
+  createdAt: string;
+};
+
 export type CafePostPublic = {
   id: string;
   userId: string;
@@ -9,6 +18,9 @@ export type CafePostPublic = {
   caption: string | null;
   imageUrl: string;
   createdAt: string;
+  likeCount: number;
+  likedByMe: boolean;
+  comments: CafeCommentPublic[];
 };
 
 export type CafePostsLoadError = {
@@ -34,6 +46,16 @@ function classifyLoadError(message: string, code: string | null): boolean {
     m.includes("could not find the column")
   );
 }
+
+type PostRow = {
+  id: string;
+  user_id: string;
+  author_label: string;
+  author_avatar_path: string | null;
+  caption: string | null;
+  image_path: string;
+  created_at: string;
+};
 
 /** Usa el mismo `createClient()` del request (no abrir otro cliente). */
 export async function getCafePosts(
@@ -66,7 +88,64 @@ export async function getCafePosts(
     return { posts: [], loadError: null };
   }
 
-  const posts = data.map((row) => {
+  const rows = data as PostRow[];
+  const postIds = rows.map((r) => r.id);
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const likeCountByPost = new Map<string, number>();
+  const likedByMeSet = new Set<string>();
+  const commentsByPost = new Map<string, CafeCommentPublic[]>();
+
+  for (const id of postIds) {
+    commentsByPost.set(id, []);
+  }
+
+  const [likesRes, commentsRes] = await Promise.all([
+    supabase
+      .from("cafe_post_likes")
+      .select("post_id, user_id")
+      .in("post_id", postIds),
+    supabase
+      .from("cafe_post_comments")
+      .select(
+        "id, post_id, user_id, author_label, author_avatar_path, body, created_at",
+      )
+      .in("post_id", postIds)
+      .order("created_at", { ascending: true }),
+  ]);
+
+  if (!likesRes.error && likesRes.data) {
+    for (const row of likesRes.data) {
+      const pid = row.post_id as string;
+      likeCountByPost.set(pid, (likeCountByPost.get(pid) ?? 0) + 1);
+      if (user?.id && row.user_id === user.id) {
+        likedByMeSet.add(pid);
+      }
+    }
+  }
+
+  if (!commentsRes.error && commentsRes.data) {
+    for (const c of commentsRes.data) {
+      const list = commentsByPost.get(c.post_id as string);
+      if (!list) continue;
+      list.push({
+        id: c.id as string,
+        userId: c.user_id as string,
+        authorLabel: c.author_label as string,
+        authorAvatarUrl: avatarPublicUrl(
+          supabase,
+          c.author_avatar_path as string | null,
+        ),
+        body: c.body as string,
+        createdAt: c.created_at as string,
+      });
+    }
+  }
+
+  const posts: CafePostPublic[] = rows.map((row) => {
     const { data: pub } = supabase.storage
       .from(BUCKET)
       .getPublicUrl(row.image_path);
@@ -78,6 +157,9 @@ export async function getCafePosts(
       caption: row.caption,
       imageUrl: pub.publicUrl,
       createdAt: row.created_at,
+      likeCount: likeCountByPost.get(row.id) ?? 0,
+      likedByMe: likedByMeSet.has(row.id),
+      comments: commentsByPost.get(row.id) ?? [],
     };
   });
 

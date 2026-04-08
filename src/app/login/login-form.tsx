@@ -3,10 +3,14 @@
 import type { FormEvent } from "react";
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 type Mode = "signin" | "signup" | "magic";
+
+function safeInternalPath(path: string): string {
+  if (!path.startsWith("/") || path.startsWith("//")) return "/";
+  return path;
+}
 
 export function LoginForm({
   redirectAfterLogin = "/",
@@ -14,7 +18,7 @@ export function LoginForm({
   /** Ruta interna tras entrar con contraseña (ej. /admin) */
   redirectAfterLogin?: string;
 }) {
-  const router = useRouter();
+  const nextPath = safeInternalPath(redirectAfterLogin);
   const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,7 +27,9 @@ export function LoginForm({
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const redirectTo = `${typeof window !== "undefined" ? window.location.origin : ""}/auth/callback`;
+  function oauthCallbackUrl(): string {
+    return `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`;
+  }
 
   async function handleSignIn(e: FormEvent) {
     e.preventDefault();
@@ -40,8 +46,8 @@ export function LoginForm({
       setError(err.message);
       return;
     }
-    router.push(redirectAfterLogin);
-    router.refresh();
+    // Navegación completa para que el proxy y las cookies de sesión apliquen de inmediato
+    window.location.assign(nextPath);
   }
 
   async function handleSignUp(e: FormEvent) {
@@ -54,7 +60,7 @@ export function LoginForm({
       email: email.trim(),
       password,
       options: {
-        emailRedirectTo: redirectTo,
+        emailRedirectTo: oauthCallbackUrl(),
         data: { full_name: fullName.trim() || undefined },
       },
     });
@@ -76,7 +82,7 @@ export function LoginForm({
     const supabase = createClient();
     const { error: err } = await supabase.auth.signInWithOtp({
       email: email.trim(),
-      options: { emailRedirectTo: redirectTo },
+      options: { emailRedirectTo: oauthCallbackUrl() },
     });
     setLoading(false);
     if (err) {

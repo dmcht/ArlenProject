@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import {
   useActionState,
   useEffect,
+  useId,
   useRef,
   useState,
   useTransition,
@@ -26,11 +27,17 @@ async function submitAvatar(
 export function ProfileAvatarSection({
   avatarUrl,
   displayLabel,
+  variant = "standalone",
+  onAvatarUpdated,
 }: {
   avatarUrl: string | null;
   displayLabel: string;
+  /** standalone: tarjeta en la página; menu: dentro del dropdown del header */
+  variant?: "standalone" | "menu";
+  onAvatarUpdated?: () => void;
 }) {
   const router = useRouter();
+  const fileInputId = useId();
   const formRef = useRef<HTMLFormElement>(null);
   const [state, formAction, pending] = useActionState(submitAvatar, null);
   const [removePending, startRemove] = useTransition();
@@ -40,25 +47,45 @@ export function ProfileAvatarSection({
     if (state?.ok) {
       formRef.current?.reset();
       router.refresh();
+      onAvatarUpdated?.();
     }
-  }, [state, router]);
+  }, [state, router, onAvatarUpdated]);
 
-  return (
-    <section
-      className="rounded-2xl border border-zinc-700/80 bg-zinc-900/50 p-4 shadow-lg ring-1 ring-zinc-600/40"
-      aria-labelledby="perfil-foto"
-    >
+  const inner = (
+    <>
       <h2
         id="perfil-foto"
-        className="text-sm font-bold uppercase tracking-wide text-zinc-200"
+        className={
+          variant === "menu"
+            ? "text-xs font-bold uppercase tracking-wide text-zinc-300"
+            : "text-sm font-bold uppercase tracking-wide text-zinc-200"
+        }
       >
-        Tu foto de perfil
+        Foto de perfil
       </h2>
-      <p className="mt-1 text-xs text-zinc-400">
-        Se muestra en el inicio, café y muro. JPG, PNG, WebP o GIF; máx. 2 MB.
+      <p
+        className={
+          variant === "menu"
+            ? "mt-1 text-[0.65rem] leading-snug text-zinc-500"
+            : "mt-1 text-xs text-zinc-400"
+        }
+      >
+        {variant === "menu"
+          ? "Café y muro. Máx. 2 MB (JPG, PNG, WebP, GIF)."
+          : "Se muestra en el inicio, café y muro. JPG, PNG, WebP o GIF; máx. 2 MB."}
       </p>
-      <div className="mt-4 flex flex-col items-center gap-4 sm:flex-row sm:items-start">
-        <UserAvatar avatarUrl={avatarUrl} label={displayLabel} size="lg" />
+      <div
+        className={
+          variant === "menu"
+            ? "mt-3 flex flex-col items-center gap-3"
+            : "mt-4 flex flex-col items-center gap-4 sm:flex-row sm:items-start"
+        }
+      >
+        <UserAvatar
+          avatarUrl={avatarUrl}
+          label={displayLabel}
+          size={variant === "menu" ? "md" : "lg"}
+        />
         <div className="flex w-full min-w-0 flex-1 flex-col gap-3">
           <form
             ref={formRef}
@@ -66,14 +93,11 @@ export function ProfileAvatarSection({
             className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-end"
           >
             <div className="min-w-0 flex-1">
-              <label
-                htmlFor="avatar-file"
-                className="sr-only"
-              >
+              <label htmlFor={fileInputId} className="sr-only">
                 Elegir foto
               </label>
               <input
-                id="avatar-file"
+                id={fileInputId}
                 name="avatar"
                 type="file"
                 accept="image/jpeg,image/png,image/webp,image/gif"
@@ -98,6 +122,7 @@ export function ProfileAvatarSection({
                   const r = await removeProfileAvatar();
                   if (r.ok) {
                     router.refresh();
+                    onAvatarUpdated?.();
                   } else {
                     setRemoveError(r.error ?? "No se pudo quitar la foto.");
                   }
@@ -125,6 +150,24 @@ export function ProfileAvatarSection({
           ) : null}
         </div>
       </div>
+    </>
+  );
+
+  if (variant === "menu") {
+    return (
+      <div className="space-y-0" aria-labelledby="perfil-foto">
+        {inner}
+      </div>
+    );
+  }
+
+  return (
+    <section
+      className="rounded-2xl border border-zinc-700/80 bg-zinc-900/50 p-4 shadow-lg ring-1 ring-zinc-600/40"
+      aria-labelledby="perfil-foto"
+    >
+      {inner}
     </section>
   );
 }
+

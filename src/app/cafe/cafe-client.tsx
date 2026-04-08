@@ -2,9 +2,11 @@
 
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
+import { Heart, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import type { FormEvent } from "react";
 import {
   useActionState,
   useEffect,
@@ -17,6 +19,11 @@ import {
   deleteCafePost,
   updateCafePost,
 } from "@/lib/conecta/cafe-actions";
+import {
+  addCafePostComment,
+  deleteCafePostComment,
+  toggleCafePostLike,
+} from "@/lib/conecta/cafe-social-actions";
 import { UserAvatar } from "@/components/conecta-platino/user-avatar";
 import type {
   CafePostPublic,
@@ -37,6 +44,195 @@ async function submitCafeUpdate(
   formData: FormData,
 ): Promise<ActionResult> {
   return updateCafePost(formData);
+}
+
+function CafePostSocialBar({
+  post,
+  currentUserId,
+}: {
+  post: CafePostPublic;
+  currentUserId: string | null;
+}) {
+  const router = useRouter();
+  const commentRef = useRef<HTMLTextAreaElement>(null);
+  const [likePending, startLike] = useTransition();
+  const [commentPending, startComment] = useTransition();
+  const [delCommentPending, startDelComment] = useTransition();
+  const [commentText, setCommentText] = useState("");
+  const [commentError, setCommentError] = useState<string | null>(null);
+  const [showComments, setShowComments] = useState(true);
+
+  const nComments = post.comments.length;
+
+  function handleToggleLike() {
+    if (!currentUserId) return;
+    startLike(async () => {
+      await toggleCafePostLike(post.id);
+      router.refresh();
+    });
+  }
+
+  function handleCommentSubmit(e: FormEvent) {
+    e.preventDefault();
+    const text = commentText.trim();
+    if (!text || !currentUserId) return;
+    setCommentError(null);
+    startComment(async () => {
+      const r = await addCafePostComment(post.id, text);
+      if (r.ok) {
+        setCommentText("");
+        router.refresh();
+      } else {
+        setCommentError(r.error ?? "No se pudo comentar.");
+      }
+    });
+  }
+
+  function handleDeleteComment(commentId: string) {
+    if (!confirm("¿Eliminar este comentario?")) return;
+    startDelComment(async () => {
+      await deleteCafePostComment(commentId);
+      router.refresh();
+    });
+  }
+
+  return (
+    <div className="border-t border-zinc-700/60 bg-zinc-950/25">
+      {(post.likeCount > 0 || nComments > 0) && (
+        <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2 text-xs text-zinc-500">
+          <span>
+            {post.likeCount > 0 ? (
+              <span className="font-medium text-zinc-400">
+                {post.likeCount === 1
+                  ? "1 me gusta"
+                  : `${post.likeCount} me gusta`}
+              </span>
+            ) : (
+              <span />
+            )}
+          </span>
+          {nComments > 0 ? (
+            <button
+              type="button"
+              onClick={() => setShowComments((v) => !v)}
+              className="font-medium text-zinc-400 hover:text-zinc-300"
+            >
+              {nComments === 1 ? "1 comentario" : `${nComments} comentarios`}
+            </button>
+          ) : null}
+        </div>
+      )}
+
+      <div className="flex border-t border-zinc-700/50">
+        <button
+          type="button"
+          disabled={!currentUserId || likePending}
+          onClick={handleToggleLike}
+          className={`flex flex-1 items-center justify-center gap-2 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 ${
+            post.likedByMe
+              ? "text-red-400 hover:bg-zinc-800/60"
+              : "text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200"
+          }`}
+        >
+          <Heart
+            className="h-5 w-5 shrink-0"
+            strokeWidth={2}
+            fill={post.likedByMe ? "currentColor" : "none"}
+          />
+          Me gusta
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setShowComments(true);
+            commentRef.current?.focus();
+          }}
+          className="flex flex-1 items-center justify-center gap-2 border-l border-zinc-700/50 py-2.5 text-sm font-semibold text-zinc-400 transition hover:bg-zinc-800/60 hover:text-zinc-200"
+        >
+          <MessageCircle className="h-5 w-5 shrink-0" strokeWidth={2} />
+          Comentar
+        </button>
+      </div>
+
+      {showComments && nComments > 0 ? (
+        <ul className="space-y-2 border-t border-zinc-700/50 px-4 py-3">
+          {post.comments.map((c) => {
+            const cw = formatDistanceToNow(new Date(c.createdAt), {
+              addSuffix: true,
+              locale: es,
+            });
+            const isMine = currentUserId != null && c.userId === currentUserId;
+            return (
+              <li
+                key={c.id}
+                className="flex gap-2 rounded-lg bg-zinc-900/70 px-2 py-2 text-sm"
+              >
+                <UserAvatar
+                  avatarUrl={c.authorAvatarUrl}
+                  label={c.authorLabel}
+                  size="sm"
+                />
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0">
+                    <span className="font-semibold text-zinc-100">
+                      {c.authorLabel}
+                    </span>
+                    <span className="text-[0.65rem] text-zinc-500">{cw}</span>
+                  </div>
+                  <p className="mt-0.5 whitespace-pre-wrap text-zinc-300">
+                    {c.body}
+                  </p>
+                  {isMine ? (
+                    <button
+                      type="button"
+                      disabled={delCommentPending}
+                      onClick={() => handleDeleteComment(c.id)}
+                      className="mt-1 text-[0.65rem] font-medium text-zinc-500 hover:text-red-400 disabled:opacity-50"
+                    >
+                      Eliminar
+                    </button>
+                  ) : null}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
+
+      {currentUserId ? (
+        <form
+          onSubmit={handleCommentSubmit}
+          className="border-t border-zinc-700/50 px-4 py-3"
+        >
+          <label className="sr-only" htmlFor={`cafe-comment-${post.id}`}>
+            Escribe un comentario
+          </label>
+          <textarea
+            ref={commentRef}
+            id={`cafe-comment-${post.id}`}
+            rows={2}
+            maxLength={1500}
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
+            placeholder="Escribe un comentario…"
+            className="w-full resize-y rounded-xl border border-zinc-600 bg-zinc-950/50 px-3 py-2 text-sm text-zinc-100 outline-none ring-zinc-500/30 placeholder:text-zinc-600 focus:border-zinc-500 focus:ring-2"
+          />
+          {commentError ? (
+            <p className="mt-1 text-xs text-red-400" role="alert">
+              {commentError}
+            </p>
+          ) : null}
+          <button
+            type="submit"
+            disabled={commentPending || !commentText.trim()}
+            className="mt-2 rounded-lg bg-gradient-to-r from-zinc-500 to-zinc-400 px-4 py-1.5 text-xs font-bold text-zinc-950 hover:from-zinc-400 hover:to-zinc-300 disabled:opacity-50"
+          >
+            {commentPending ? "Enviando…" : "Publicar comentario"}
+          </button>
+        </form>
+      ) : null}
+    </div>
+  );
 }
 
 function CafePostRow({
@@ -215,6 +411,9 @@ function CafePostRow({
           {post.caption}
         </p>
       ) : null}
+      {!editing ? (
+        <CafePostSocialBar post={post} currentUserId={currentUserId} />
+      ) : null}
       {deleteError ? (
         <p className="border-t border-zinc-700/60 px-4 py-2 text-sm text-red-400">
           {deleteError}
@@ -265,6 +464,13 @@ function CafeSetupHelp({ loadError }: { loadError: CafePostsLoadError }) {
           <li>
             En <strong>Table Editor</strong> comprueba que exista la tabla{" "}
             <code className="rounded bg-zinc-900/80 px-1 text-zinc-200">cafe_posts</code>.
+          </li>
+          <li>
+            Para <strong>me gusta y comentarios</strong>, ejecuta también{" "}
+            <code className="rounded bg-zinc-900/80 px-1 text-zinc-200">
+              supabase/migrations/20260417120000_cafe_likes_comments.sql
+            </code>
+            .
           </li>
           <li>
             Ejecuta otra vez en SQL:{" "}

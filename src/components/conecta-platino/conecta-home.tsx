@@ -1,7 +1,6 @@
 import type { UserProgressPayload } from "@/lib/conecta/get-progress";
 import { ActionGrid } from "./action-grid";
 import { HillsFooter } from "./hills-footer";
-import { ProfileAvatarSection } from "./profile-avatar-section";
 import { ProgressSection } from "./progress-section";
 import { SkyHeader } from "./sky-header";
 
@@ -15,12 +14,6 @@ export function ConectaHome({ progress }: { progress: UserProgressPayload }) {
       />
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-5 px-4 pb-5 sm:px-5">
         <ActionGrid />
-        {progress.isAuthenticated ? (
-          <ProfileAvatarSection
-            avatarUrl={progress.avatarUrl}
-            displayLabel={progress.displayName}
-          />
-        ) : null}
         <ProgressSection data={progress} />
       </main>
       <HillsFooter />
