@@ -11,6 +11,7 @@ import {
   useState,
   useTransition,
 } from "react";
+import { UserAvatar } from "@/components/conecta-platino/user-avatar";
 import {
   createMuroComment,
   createMuroPost,
@@ -131,12 +132,11 @@ function PostCard({
   return (
     <article className="overflow-hidden rounded-2xl border border-zinc-700/80 bg-zinc-900/50 shadow-lg shadow-black/30 ring-1 ring-zinc-600/40">
       <div className="flex items-start gap-3 border-b border-zinc-700/60 bg-gradient-to-r from-zinc-800/90 to-zinc-900/80 px-4 py-3">
-        <span
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-zinc-500 to-zinc-700 text-sm font-bold text-white shadow-sm"
-          aria-hidden
-        >
-          {post.authorLabel.slice(0, 1).toUpperCase()}
-        </span>
+        <UserAvatar
+          avatarUrl={post.authorAvatarUrl}
+          label={post.authorLabel}
+          size="md"
+        />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold text-zinc-50">
             {post.authorLabel}
@@ -164,8 +164,19 @@ function PostCard({
                 key={c.id}
                 className="rounded-lg border border-zinc-700/60 bg-zinc-900/60 px-3 py-2 text-sm"
               >
-                <p className="font-semibold text-zinc-100">{c.authorLabel}</p>
-                <p className="text-xs text-zinc-500">{cw}</p>
+                <div className="flex items-center gap-2">
+                  <UserAvatar
+                    avatarUrl={c.authorAvatarUrl}
+                    label={c.authorLabel}
+                    size="sm"
+                  />
+                  <div className="min-w-0">
+                    <p className="font-semibold text-zinc-100">
+                      {c.authorLabel}
+                    </p>
+                    <p className="text-xs text-zinc-500">{cw}</p>
+                  </div>
+                </div>
                 <p className="mt-1 whitespace-pre-wrap text-zinc-300">
                   {c.body}
                 </p>

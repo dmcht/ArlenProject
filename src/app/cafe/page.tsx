@@ -44,6 +44,7 @@ export default async function CafePage() {
             posts={posts}
             loadError={loadError}
             isAuthenticated={!!user}
+            currentUserId={user?.id ?? null}
           />
         </div>
       </div>

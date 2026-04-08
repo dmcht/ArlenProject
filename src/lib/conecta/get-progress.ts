@@ -1,3 +1,4 @@
+import { avatarPublicUrl } from "@/lib/conecta/avatar-public-url";
 import { createClient } from "@/lib/supabase/server";
 
 export type UserProgressPayload = {
@@ -8,6 +9,8 @@ export type UserProgressPayload = {
   quote: string;
   isAuthenticated: boolean;
   userEmail: string | null;
+  displayName: string;
+  avatarUrl: string | null;
 };
 
 const FALLBACK_QUOTE =
@@ -30,6 +33,8 @@ export async function getUserProgress(): Promise<UserProgressPayload> {
       quote: FALLBACK_QUOTE,
       isAuthenticated: false,
       userEmail: null,
+      displayName: "Usuario",
+      avatarUrl: null,
     };
   }
 
@@ -68,12 +73,22 @@ export async function getUserProgress(): Promise<UserProgressPayload> {
       quote: quoteBody,
       isAuthenticated: false,
       userEmail: null,
+      displayName: "Usuario",
+      avatarUrl: null,
     };
   }
 
   const profile = await supabase
     .from("profiles")
-    .select("charlas_realizadas, cafes_participados, reconocimientos_dados")
+    .select(
+      "charlas_realizadas, cafes_participados, reconocimientos_dados, display_name",
+    )
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const avatarRow = await supabase
+    .from("profiles")
+    .select("avatar_path")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -81,6 +96,16 @@ export async function getUserProgress(): Promise<UserProgressPayload> {
     .from("user_badges")
     .select("badge_id")
     .eq("user_id", user.id);
+
+  const displayName =
+    (!profile.error && profile.data?.display_name?.trim()) ||
+    user.email?.split("@")[0]?.trim() ||
+    "Usuario";
+
+  const avatarUrl =
+    avatarRow.error || !avatarRow.data
+      ? null
+      : avatarPublicUrl(supabase, avatarRow.data.avatar_path);
 
   return {
     charlas: profile.error ? 0 : (profile.data?.charlas_realizadas ?? 0),
@@ -94,5 +119,7 @@ export async function getUserProgress(): Promise<UserProgressPayload> {
     quote: quoteBody,
     isAuthenticated: true,
     userEmail: user.email ?? null,
+    displayName,
+    avatarUrl,
   };
 }

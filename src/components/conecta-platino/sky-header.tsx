@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { UserAvatar } from "./user-avatar";
 
 function PlatinumGlow({ className }: { className?: string }) {
   return (
@@ -12,8 +13,12 @@ function PlatinumGlow({ className }: { className?: string }) {
 
 export function SkyHeader({
   userEmail,
+  avatarUrl = null,
+  displayName = "Usuario",
 }: {
   userEmail: string | null;
+  avatarUrl?: string | null;
+  displayName?: string;
 }) {
   return (
     <header className="relative overflow-hidden px-4 pb-7 pt-9 sm:px-5">
@@ -27,9 +32,16 @@ export function SkyHeader({
       <div className="absolute right-2 top-3 z-20 flex max-w-[min(12rem,calc(100%-1rem))] flex-col items-end gap-1 sm:right-4">
         {userEmail ? (
           <>
-            <span className="truncate text-[0.65rem] font-medium text-zinc-400 sm:text-xs">
-              {userEmail}
-            </span>
+            <div className="flex max-w-full items-center justify-end gap-2">
+              <UserAvatar
+                avatarUrl={avatarUrl}
+                label={displayName}
+                size="sm"
+              />
+              <span className="min-w-0 truncate text-[0.65rem] font-medium text-zinc-400 sm:text-xs">
+                {userEmail}
+              </span>
+            </div>
             <form action="/auth/sign-out" method="post">
               <button
                 type="submit"
@@ -52,11 +64,11 @@ export function SkyHeader({
       <div className="relative mx-auto flex max-w-md flex-col items-center text-center">
         <div className="relative mb-4 flex justify-center">
           <Image
-            src="/grupo-platino-logo.png"
-            alt="Grupo Platino"
-            width={320}
-            height={128}
-            className="h-24 w-auto max-w-[min(100%,22rem)] object-contain sm:h-28"
+            src="/transportes-platino-logo.png"
+            alt="Transportes Platino"
+            width={1024}
+            height={512}
+            className="h-20 w-auto max-w-[min(100%,26rem)] object-contain sm:h-28"
             priority
           />
         </div>

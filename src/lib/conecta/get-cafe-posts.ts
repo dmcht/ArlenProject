@@ -1,9 +1,11 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { avatarPublicUrl } from "@/lib/conecta/avatar-public-url";
 
 export type CafePostPublic = {
   id: string;
   userId: string;
   authorLabel: string;
+  authorAvatarUrl: string | null;
   caption: string | null;
   imageUrl: string;
   createdAt: string;
@@ -39,7 +41,9 @@ export async function getCafePosts(
 ): Promise<CafePostsLoadResult> {
   const { data, error } = await supabase
     .from("cafe_posts")
-    .select("id, user_id, author_label, caption, image_path, created_at")
+    .select(
+      "id, user_id, author_label, author_avatar_path, caption, image_path, created_at",
+    )
     .order("created_at", { ascending: false })
     .limit(50);
 
@@ -70,6 +74,7 @@ export async function getCafePosts(
       id: row.id,
       userId: row.user_id,
       authorLabel: row.author_label,
+      authorAvatarUrl: avatarPublicUrl(supabase, row.author_avatar_path),
       caption: row.caption,
       imageUrl: pub.publicUrl,
       createdAt: row.created_at,

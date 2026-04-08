@@ -1,9 +1,11 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { avatarPublicUrl } from "@/lib/conecta/avatar-public-url";
 
 export type MuroCommentPublic = {
   id: string;
   userId: string;
   authorLabel: string;
+  authorAvatarUrl: string | null;
   body: string;
   createdAt: string;
 };
@@ -12,6 +14,7 @@ export type MuroPostPublic = {
   id: string;
   userId: string;
   authorLabel: string;
+  authorAvatarUrl: string | null;
   body: string;
   createdAt: string;
   comments: MuroCommentPublic[];
@@ -42,6 +45,7 @@ type PostRow = {
   id: string;
   user_id: string;
   author_label: string;
+  author_avatar_path: string | null;
   body: string;
   created_at: string;
 };
@@ -51,6 +55,7 @@ type CommentRow = {
   post_id: string;
   user_id: string;
   author_label: string;
+  author_avatar_path: string | null;
   body: string;
   created_at: string;
 };
@@ -60,7 +65,9 @@ export async function getMuroFeed(
 ): Promise<MuroFeedResult> {
   const { data: postRows, error: postsErr } = await supabase
     .from("muro_posts")
-    .select("id, user_id, author_label, body, created_at")
+    .select(
+      "id, user_id, author_label, author_avatar_path, body, created_at",
+    )
     .order("created_at", { ascending: false })
     .limit(40);
 
@@ -87,7 +94,9 @@ export async function getMuroFeed(
   const postIds = posts.map((p) => p.id);
   const { data: commentRows, error: commentsErr } = await supabase
     .from("muro_comments")
-    .select("id, post_id, user_id, author_label, body, created_at")
+    .select(
+      "id, post_id, user_id, author_label, author_avatar_path, body, created_at",
+    )
     .in("post_id", postIds)
     .order("created_at", { ascending: true });
 
@@ -116,6 +125,7 @@ export async function getMuroFeed(
       id: c.id,
       userId: c.user_id,
       authorLabel: c.author_label,
+      authorAvatarUrl: avatarPublicUrl(supabase, c.author_avatar_path),
       body: c.body,
       createdAt: c.created_at,
     });
@@ -125,6 +135,7 @@ export async function getMuroFeed(
     id: p.id,
     userId: p.user_id,
     authorLabel: p.author_label,
+    authorAvatarUrl: avatarPublicUrl(supabase, p.author_avatar_path),
     body: p.body,
     createdAt: p.created_at,
     comments: byPost.get(p.id) ?? [],

@@ -5,8 +5,19 @@ import { es } from "date-fns/locale";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useRef } from "react";
-import { createCafePost } from "@/lib/conecta/cafe-actions";
+import {
+  useActionState,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
+import {
+  createCafePost,
+  deleteCafePost,
+  updateCafePost,
+} from "@/lib/conecta/cafe-actions";
+import { UserAvatar } from "@/components/conecta-platino/user-avatar";
 import type {
   CafePostPublic,
   CafePostsLoadError,
@@ -21,28 +32,174 @@ async function submitCafePost(
   return createCafePost(formData);
 }
 
-function PostCard({ post }: { post: CafePostPublic }) {
+async function submitCafeUpdate(
+  _prev: ActionResult,
+  formData: FormData,
+): Promise<ActionResult> {
+  return updateCafePost(formData);
+}
+
+function CafePostRow({
+  post,
+  currentUserId,
+}: {
+  post: CafePostPublic;
+  currentUserId: string | null;
+}) {
+  const router = useRouter();
+  const isOwner = currentUserId != null && post.userId === currentUserId;
+  const [editing, setEditing] = useState(false);
+  const [editSession, setEditSession] = useState(0);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [pendingDelete, startDelete] = useTransition();
+  const [updState, updAction, updPending] = useActionState(
+    submitCafeUpdate,
+    null,
+  );
+
+  useEffect(() => {
+    if (updState?.ok) {
+      setEditing(false);
+      router.refresh();
+    }
+  }, [updState, router]);
+
   const when = formatDistanceToNow(new Date(post.createdAt), {
     addSuffix: true,
     locale: es,
   });
 
+  function handleDelete() {
+    if (!confirm("¿Eliminar esta publicación? Esta acción no se puede deshacer.")) {
+      return;
+    }
+    setDeleteError(null);
+    startDelete(async () => {
+      const r = await deleteCafePost(post.id);
+      if (r.ok) {
+        router.refresh();
+      } else {
+        setDeleteError(r.error ?? "No se pudo eliminar.");
+      }
+    });
+  }
+
   return (
     <article className="overflow-hidden rounded-2xl border border-zinc-700/80 bg-zinc-900/50 shadow-lg shadow-black/30 ring-1 ring-zinc-600/40">
       <div className="flex items-center gap-3 border-b border-zinc-700/60 bg-gradient-to-r from-zinc-800/90 to-zinc-900/80 px-4 py-3">
-        <span
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-zinc-500 to-zinc-700 text-sm font-bold text-white shadow-sm"
-          aria-hidden
-        >
-          {post.authorLabel.slice(0, 1).toUpperCase()}
-        </span>
+        <UserAvatar
+          avatarUrl={post.authorAvatarUrl}
+          label={post.authorLabel}
+          size="md"
+        />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-zinc-50">
             {post.authorLabel}
           </p>
           <p className="text-xs text-zinc-500">{when}</p>
         </div>
+        {isOwner ? (
+          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+            {!editing ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDeleteError(null);
+                    setEditSession((n) => n + 1);
+                    setEditing(true);
+                  }}
+                  className="rounded-lg border border-zinc-600/90 bg-zinc-900/80 px-2.5 py-1 text-xs font-semibold text-zinc-100 hover:bg-zinc-800"
+                >
+                  Editar
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  disabled={pendingDelete}
+                  className="rounded-lg border border-red-900/60 bg-red-950/40 px-2.5 py-1 text-xs font-semibold text-red-200 hover:bg-red-950/70 disabled:opacity-50"
+                >
+                  {pendingDelete ? "Eliminando…" : "Eliminar"}
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setEditing(false);
+                  setDeleteError(null);
+                }}
+                className="rounded-lg border border-zinc-600/90 px-2.5 py-1 text-xs font-semibold text-zinc-300 hover:bg-zinc-800"
+              >
+                Cerrar
+              </button>
+            )}
+          </div>
+        ) : null}
       </div>
+
+      {editing && isOwner ? (
+        <form
+          key={`${post.id}-${editSession}`}
+          action={updAction}
+          className="space-y-4 border-b border-zinc-700/60 p-4"
+        >
+          <input type="hidden" name="postId" value={post.id} />
+          <div>
+            <label
+              htmlFor={`cafe-edit-caption-${post.id}`}
+              className="block text-xs font-semibold text-zinc-300"
+            >
+              Mensaje
+            </label>
+            <textarea
+              id={`cafe-edit-caption-${post.id}`}
+              name="caption"
+              rows={3}
+              maxLength={500}
+              defaultValue={post.caption ?? ""}
+              placeholder="Texto de la publicación (opcional)"
+              className="mt-1.5 w-full rounded-xl border border-zinc-600 bg-zinc-950/40 px-3 py-2 text-sm text-zinc-100 outline-none ring-zinc-500/30 placeholder:text-zinc-500 focus:border-zinc-400 focus:ring-2"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor={`cafe-edit-image-${post.id}`}
+              className="block text-xs font-semibold text-zinc-300"
+            >
+              Cambiar imagen (opcional)
+            </label>
+            <input
+              id={`cafe-edit-image-${post.id}`}
+              name="image"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              className="mt-1.5 block w-full text-sm text-zinc-400 file:mr-3 file:rounded-lg file:border-0 file:bg-zinc-600 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-zinc-100 hover:file:bg-zinc-500"
+            />
+            <p className="mt-1 text-[0.65rem] text-zinc-500">
+              Si no eliges archivo, se mantiene la foto actual.
+            </p>
+          </div>
+          {updState && !updState.ok && updState.error ? (
+            <p className="text-sm text-red-400" role="alert">
+              {updState.error}
+            </p>
+          ) : null}
+          {updState?.ok ? (
+            <p className="text-sm font-medium text-zinc-300" role="status">
+              Cambios guardados.
+            </p>
+          ) : null}
+          <button
+            type="submit"
+            disabled={updPending}
+            className="rounded-xl bg-gradient-to-r from-zinc-300 via-zinc-100 to-zinc-400 px-4 py-2 text-sm font-bold text-zinc-950 shadow-md disabled:opacity-60"
+          >
+            {updPending ? "Guardando…" : "Guardar cambios"}
+          </button>
+        </form>
+      ) : null}
+
       <div className="relative aspect-[4/3] w-full bg-zinc-950 sm:aspect-video">
         <Image
           src={post.imageUrl}
@@ -53,9 +210,14 @@ function PostCard({ post }: { post: CafePostPublic }) {
           unoptimized={false}
         />
       </div>
-      {post.caption ? (
+      {!editing && post.caption ? (
         <p className="px-4 py-3 text-sm leading-relaxed text-zinc-300">
           {post.caption}
+        </p>
+      ) : null}
+      {deleteError ? (
+        <p className="border-t border-zinc-700/60 px-4 py-2 text-sm text-red-400">
+          {deleteError}
         </p>
       ) : null}
     </article>
@@ -125,10 +287,12 @@ export function CafeClient({
   posts,
   loadError,
   isAuthenticated,
+  currentUserId,
 }: {
   posts: CafePostPublic[];
   loadError: CafePostsLoadError | null;
   isAuthenticated: boolean;
+  currentUserId: string | null;
 }) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
@@ -246,7 +410,7 @@ export function CafeClient({
           <ul className="mt-5 flex flex-col gap-6">
             {posts.map((post) => (
               <li key={post.id}>
-                <PostCard post={post} />
+                <CafePostRow post={post} currentUserId={currentUserId} />
               </li>
             ))}
           </ul>

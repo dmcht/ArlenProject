@@ -7,21 +7,23 @@ import { createClient } from "@/lib/supabase/server";
 const MAX_POST = 4000;
 const MAX_COMMENT = 1500;
 
-async function authorLabelForUser(
+async function authorRowForMuro(
   supabase: SupabaseClient,
   userId: string,
   email: string | undefined,
-): Promise<string> {
+): Promise<{ label: string; avatarPath: string | null }> {
   const { data: profile } = await supabase
     .from("profiles")
-    .select("display_name")
+    .select("display_name, avatar_path")
     .eq("id", userId)
     .maybeSingle();
-  return (
-    profile?.display_name?.trim() ||
-    email?.split("@")[0]?.trim() ||
-    "Usuario"
-  );
+  return {
+    label:
+      profile?.display_name?.trim() ||
+      email?.split("@")[0]?.trim() ||
+      "Usuario",
+    avatarPath: profile?.avatar_path ?? null,
+  };
 }
 
 export async function createMuroPost(bodyRaw: string): Promise<{
@@ -44,7 +46,7 @@ export async function createMuroPost(bodyRaw: string): Promise<{
     return { ok: false, error: "Inicia sesión para publicar." };
   }
 
-  const authorLabel = await authorLabelForUser(
+  const author = await authorRowForMuro(
     supabase,
     user.id,
     user.email ?? undefined,
@@ -52,7 +54,8 @@ export async function createMuroPost(bodyRaw: string): Promise<{
 
   const { error } = await supabase.from("muro_posts").insert({
     user_id: user.id,
-    author_label: authorLabel,
+    author_label: author.label,
+    author_avatar_path: author.avatarPath,
     body,
   });
 
@@ -95,7 +98,7 @@ export async function createMuroComment(
     return { ok: false, error: "Inicia sesión para comentar." };
   }
 
-  const authorLabel = await authorLabelForUser(
+  const author = await authorRowForMuro(
     supabase,
     user.id,
     user.email ?? undefined,
@@ -104,7 +107,8 @@ export async function createMuroComment(
   const { error } = await supabase.from("muro_comments").insert({
     post_id: postId,
     user_id: user.id,
-    author_label: authorLabel,
+    author_label: author.label,
+    author_avatar_path: author.avatarPath,
     body,
   });
 
