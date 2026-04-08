@@ -73,7 +73,7 @@ export function NotificationsBell({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="relative flex h-10 w-10 items-center justify-center rounded-full border border-zinc-600/80 bg-zinc-900/90 text-zinc-300 shadow-sm ring-1 ring-zinc-500/30 backdrop-blur-sm hover:bg-zinc-800 hover:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-400/50"
+        className="relative flex h-11 min-h-[44px] w-11 min-w-[44px] shrink-0 items-center justify-center rounded-full border border-zinc-600/80 bg-zinc-900/90 text-zinc-300 shadow-sm ring-1 ring-zinc-500/30 backdrop-blur-sm hover:bg-zinc-800 hover:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-400/50 sm:h-10 sm:min-h-0 sm:w-10 sm:min-w-0"
         aria-expanded={open}
         aria-label="Notificaciones"
       >
@@ -87,11 +87,11 @@ export function NotificationsBell({
 
       {open ? (
         <div
-          className="absolute right-0 top-[calc(100%+0.35rem)] z-[60] w-[min(calc(100vw-2rem),20rem)] rounded-xl border border-zinc-600/90 bg-zinc-900/98 py-2 shadow-2xl shadow-black/50 ring-1 ring-zinc-500/40 backdrop-blur-md"
+          className="z-[60] flex max-h-[min(70dvh,22rem)] w-full flex-col overflow-hidden rounded-xl border border-zinc-600/90 bg-zinc-900/98 py-2 shadow-2xl shadow-black/50 ring-1 ring-zinc-500/40 backdrop-blur-md max-sm:fixed max-sm:left-[max(0.75rem,env(safe-area-inset-left,0px))] max-sm:right-[max(0.75rem,env(safe-area-inset-right,0px))] max-sm:top-[max(4.5rem,calc(env(safe-area-inset-top,0px)+3rem))] max-sm:max-h-[min(65dvh,calc(100dvh-5.5rem))] sm:absolute sm:right-0 sm:top-[calc(100%+0.35rem)] sm:w-[min(calc(100vw-1rem),20rem)] sm:max-w-[min(calc(100vw-1rem),20rem)]"
           role="menu"
         >
-          <div className="flex items-center justify-between border-b border-zinc-700/70 px-3 pb-2">
-            <p className="text-xs font-bold uppercase tracking-wide text-zinc-300">
+          <div className="flex shrink-0 items-center justify-between gap-2 border-b border-zinc-700/70 px-3 pb-2">
+            <p className="min-w-0 text-xs font-bold uppercase tracking-wide text-zinc-300">
               Notificaciones
             </p>
             {initialUnreadCount > 0 ? (
@@ -99,13 +99,13 @@ export function NotificationsBell({
                 type="button"
                 disabled={pending}
                 onClick={markAll}
-                className="text-[0.65rem] font-semibold text-zinc-400 hover:text-zinc-200 disabled:opacity-50"
+                className="shrink-0 rounded-md px-1 py-2 text-[0.65rem] font-semibold text-zinc-400 hover:bg-zinc-800/80 hover:text-zinc-200 disabled:opacity-50 sm:py-1"
               >
                 Marcar leídas
               </button>
             ) : null}
           </div>
-          <ul className="max-h-[min(70vh,22rem)] overflow-y-auto py-1">
+          <ul className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain py-1 [-webkit-overflow-scrolling:touch]">
             {initialItems.length === 0 ? (
               <li className="px-3 py-6 text-center text-sm text-zinc-500">
                 No hay notificaciones todavía.
@@ -133,11 +133,11 @@ export function NotificationsBell({
                           window.location.assign(target);
                         });
                       }}
-                      className={`block px-3 py-2.5 text-left transition hover:bg-zinc-800/80 ${
+                      className={`block min-h-[44px] px-3 py-3 text-left transition active:bg-zinc-800 sm:min-h-0 sm:py-2.5 ${
                         unread ? "bg-zinc-800/40" : ""
-                      }`}
+                      } hover:bg-zinc-800/80`}
                     >
-                      <p className="text-sm leading-snug text-zinc-100">
+                      <p className="break-words text-sm leading-snug text-zinc-100">
                         {n.title}
                       </p>
                       <p className="mt-1 text-[0.65rem] text-zinc-500">

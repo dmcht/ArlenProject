@@ -32,18 +32,21 @@ export default async function CafePage() {
   return (
     <div className="min-h-full bg-gradient-to-b from-zinc-950 via-neutral-950 to-black px-4 py-8 pb-14 sm:px-6">
       <div className="mx-auto max-w-lg">
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex min-w-0 items-start justify-between gap-2 sm:gap-3">
           <Link
             href="/"
-            className="inline-flex text-sm font-semibold text-zinc-400 underline-offset-4 hover:text-white hover:underline"
+            className="min-w-0 flex-1 text-sm font-semibold leading-snug text-zinc-400 underline-offset-4 hover:text-white hover:underline"
           >
-            ← Volver al inicio
+            <span className="sm:hidden">← Inicio</span>
+            <span className="hidden sm:inline">← Volver al inicio</span>
           </Link>
           {user ? (
-            <NotificationsBell
-              initialItems={notifications.items}
-              initialUnreadCount={notifications.unreadCount}
-            />
+            <div className="shrink-0">
+              <NotificationsBell
+                initialItems={notifications.items}
+                initialUnreadCount={notifications.unreadCount}
+              />
+            </div>
           ) : null}
         </div>
         <h1 className="mt-6 text-2xl font-extrabold tracking-tight text-zinc-50 sm:text-[1.65rem]">

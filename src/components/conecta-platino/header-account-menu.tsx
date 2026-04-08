@@ -39,7 +39,7 @@ export function HeaderAccountMenu({
     return (
       <Link
         href="/login"
-        className="rounded-full border border-zinc-600/80 bg-zinc-900/90 px-3 py-1 text-[0.65rem] font-semibold text-zinc-100 shadow-sm ring-1 ring-zinc-500/30 backdrop-blur-sm hover:bg-zinc-800 sm:text-xs"
+        className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-zinc-600/80 bg-zinc-900/90 px-4 py-2 text-xs font-semibold text-zinc-100 shadow-sm ring-1 ring-zinc-500/30 backdrop-blur-sm hover:bg-zinc-800 sm:min-h-0 sm:min-w-0 sm:px-3 sm:py-1 sm:text-[0.65rem]"
       >
         Entrar
       </Link>
@@ -51,7 +51,7 @@ export function HeaderAccountMenu({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1 rounded-full border border-zinc-600/80 bg-zinc-900/90 p-0.5 pl-0.5 shadow-sm ring-1 ring-zinc-500/30 backdrop-blur-sm hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-400/50"
+        className="flex min-h-[44px] min-w-[44px] items-center gap-1 rounded-full border border-zinc-600/80 bg-zinc-900/90 p-0.5 pl-0.5 shadow-sm ring-1 ring-zinc-500/30 backdrop-blur-sm hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-400/50 sm:min-h-0 sm:min-w-0"
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label="Menú de cuenta"
@@ -64,7 +64,7 @@ export function HeaderAccountMenu({
 
       {open ? (
         <div
-          className="absolute right-0 top-[calc(100%+0.35rem)] z-50 w-[min(calc(100vw-1.5rem),18rem)] rounded-xl border border-zinc-600/90 bg-zinc-900/98 py-3 shadow-2xl shadow-black/50 ring-1 ring-zinc-500/40 backdrop-blur-md"
+          className="z-50 flex max-h-[min(70dvh,28rem)] flex-col overflow-y-auto overscroll-y-contain rounded-xl border border-zinc-600/90 bg-zinc-900/98 py-3 shadow-2xl shadow-black/50 ring-1 ring-zinc-500/40 backdrop-blur-md [-webkit-overflow-scrolling:touch] max-sm:fixed max-sm:left-[max(0.75rem,env(safe-area-inset-left,0px))] max-sm:right-[max(0.75rem,env(safe-area-inset-right,0px))] max-sm:top-[max(4.5rem,calc(env(safe-area-inset-top,0px)+3rem))] max-sm:max-h-[min(65dvh,calc(100dvh-5.5rem))] sm:absolute sm:right-0 sm:top-[calc(100%+0.35rem)] sm:w-[min(calc(100vw-1rem),18rem)] sm:max-w-[min(calc(100vw-1rem),18rem)]"
           role="menu"
         >
           <div className="border-b border-zinc-700/70 px-3 pb-3">

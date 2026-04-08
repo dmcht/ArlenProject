@@ -27,14 +27,14 @@ export function SkyHeader({
   } | null;
 }) {
   return (
-    <header className="relative px-4 pb-7 pt-9 sm:px-5">
+    <header className="relative px-4 pb-7 pt-[max(2.25rem,env(safe-area-inset-top,0px))] sm:px-5 sm:pt-9">
       <div className="absolute inset-0 overflow-hidden" aria-hidden>
         <div className="absolute inset-0 bg-gradient-to-b from-zinc-900 via-zinc-950 to-zinc-950" />
         <PlatinumGlow className="left-[5%] top-4 h-24 w-40" />
         <PlatinumGlow className="right-[8%] top-12 h-20 w-32 opacity-80" />
       </div>
 
-      <div className="absolute right-2 top-3 z-30 flex items-start gap-2 sm:right-4">
+      <div className="absolute right-[max(0.5rem,env(safe-area-inset-right,0px))] top-[max(0.75rem,env(safe-area-inset-top,0px))] z-30 flex max-w-[calc(100%-0.5rem)] items-start gap-1.5 sm:gap-2">
         {userEmail && notifications ? (
           <NotificationsBell
             initialItems={notifications.items}
@@ -48,7 +48,7 @@ export function SkyHeader({
         />
       </div>
 
-      <div className="relative mx-auto flex max-w-md flex-col items-center text-center">
+      <div className="relative mx-auto flex w-full max-w-md flex-col items-center px-11 text-center sm:px-5">
         <div className="relative mb-4 flex justify-center">
           <Image
             src="/transportes-platino-logo.png"

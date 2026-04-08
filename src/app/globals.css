@@ -19,4 +19,7 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+  /* iPhone notch / gestos: evita que el contenido quede bajo áreas del sistema */
+  padding-left: max(0px, env(safe-area-inset-left, 0px));
+  padding-right: max(0px, env(safe-area-inset-right, 0px));
 }

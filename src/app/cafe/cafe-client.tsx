@@ -99,7 +99,7 @@ function CafePostSocialBar({
   return (
     <div className="border-t border-zinc-700/60 bg-zinc-950/25">
       {(post.likeCount > 0 || nComments > 0) && (
-        <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2 text-xs text-zinc-500">
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 px-3 py-2 text-[0.7rem] text-zinc-500 sm:px-4 sm:text-xs">
           <span>
             {post.likeCount > 0 ? (
               <span className="font-medium text-zinc-400">
@@ -128,7 +128,7 @@ function CafePostSocialBar({
           type="button"
           disabled={!currentUserId || likePending}
           onClick={handleToggleLike}
-          className={`flex flex-1 items-center justify-center gap-2 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 ${
+          className={`flex min-h-[48px] flex-1 items-center justify-center gap-1.5 py-2 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-0 sm:gap-2 sm:py-2.5 sm:text-sm ${
             post.likedByMe
               ? "text-red-400 hover:bg-zinc-800/60"
               : "text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200"
@@ -147,7 +147,7 @@ function CafePostSocialBar({
             setShowComments(true);
             commentRef.current?.focus();
           }}
-          className="flex flex-1 items-center justify-center gap-2 border-l border-zinc-700/50 py-2.5 text-sm font-semibold text-zinc-400 transition hover:bg-zinc-800/60 hover:text-zinc-200"
+          className="flex min-h-[48px] flex-1 items-center justify-center gap-1.5 border-l border-zinc-700/50 py-2 text-xs font-semibold text-zinc-400 transition hover:bg-zinc-800/60 hover:text-zinc-200 sm:min-h-0 sm:gap-2 sm:py-2.5 sm:text-sm"
         >
           <MessageCircle className="h-5 w-5 shrink-0" strokeWidth={2} />
           Comentar
