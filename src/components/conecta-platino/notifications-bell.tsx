@@ -12,6 +12,7 @@ import {
   useState,
   useTransition,
 } from "react";
+import { createClient } from "@/lib/supabase/client";
 import type { NotificationPublic } from "@/lib/conecta/get-notifications";
 import {
   markAllNotificationsRead,
@@ -26,9 +27,11 @@ function hrefForNotification(n: NotificationPublic): string {
 }
 
 export function NotificationsBell({
+  userId,
   initialItems,
   initialUnreadCount,
 }: {
+  userId: string;
   initialItems: NotificationPublic[];
   initialUnreadCount: number;
 }) {
@@ -36,6 +39,43 @@ export function NotificationsBell({
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const [pending, startTransition] = useTransition();
+  const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    const scheduleRefresh = () => {
+      if (refreshTimerRef.current) {
+        clearTimeout(refreshTimerRef.current);
+      }
+      refreshTimerRef.current = setTimeout(() => {
+        refreshTimerRef.current = null;
+        router.refresh();
+      }, 200);
+    };
+
+    const channel = supabase
+      .channel(`notifications:${userId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${userId}`,
+        },
+        () => {
+          scheduleRefresh();
+        },
+      )
+      .subscribe();
+
+    return () => {
+      if (refreshTimerRef.current) {
+        clearTimeout(refreshTimerRef.current);
+      }
+      supabase.removeChannel(channel);
+    };
+  }, [userId, router]);
 
   useEffect(() => {
     if (!open) return;

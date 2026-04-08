@@ -43,6 +43,7 @@ export default async function CafePage() {
           {user ? (
             <div className="shrink-0">
               <NotificationsBell
+                userId={user.id}
                 initialItems={notifications.items}
                 initialUnreadCount={notifications.unreadCount}
               />

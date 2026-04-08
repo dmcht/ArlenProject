@@ -41,6 +41,7 @@ export default async function MuroPage() {
           {user ? (
             <div className="shrink-0">
               <NotificationsBell
+                userId={user.id}
                 initialItems={notifications.items}
                 initialUnreadCount={notifications.unreadCount}
               />

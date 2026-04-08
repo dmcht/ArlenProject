@@ -17,10 +17,12 @@ export function SkyHeader({
   avatarUrl = null,
   displayName = "Usuario",
   notifications = null,
+  currentUserId = null,
 }: {
   userEmail: string | null;
   avatarUrl?: string | null;
   displayName?: string;
+  currentUserId?: string | null;
   notifications?: {
     items: NotificationPublic[];
     unreadCount: number;
@@ -35,8 +37,9 @@ export function SkyHeader({
       </div>
 
       <div className="absolute right-[max(0.5rem,env(safe-area-inset-right,0px))] top-[max(0.75rem,env(safe-area-inset-top,0px))] z-30 flex max-w-[calc(100%-0.5rem)] items-start gap-1.5 sm:gap-2">
-        {userEmail && notifications ? (
+        {userEmail && notifications && currentUserId ? (
           <NotificationsBell
+            userId={currentUserId}
             initialItems={notifications.items}
             initialUnreadCount={notifications.unreadCount}
           />

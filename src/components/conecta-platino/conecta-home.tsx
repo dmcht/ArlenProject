@@ -21,6 +21,7 @@ export function ConectaHome({
         userEmail={progress.userEmail}
         avatarUrl={progress.isAuthenticated ? progress.avatarUrl : null}
         displayName={progress.displayName}
+        currentUserId={progress.userId}
         notifications={
           progress.isAuthenticated ? notifications : null
         }

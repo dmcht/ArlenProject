@@ -8,6 +8,7 @@ export type UserProgressPayload = {
   earnedBadgeIds: string[];
   quote: string;
   isAuthenticated: boolean;
+  userId: string | null;
   userEmail: string | null;
   displayName: string;
   avatarUrl: string | null;
@@ -32,6 +33,7 @@ export async function getUserProgress(): Promise<UserProgressPayload> {
       earnedBadgeIds: [],
       quote: FALLBACK_QUOTE,
       isAuthenticated: false,
+      userId: null,
       userEmail: null,
       displayName: "Usuario",
       avatarUrl: null,
@@ -72,6 +74,7 @@ export async function getUserProgress(): Promise<UserProgressPayload> {
       earnedBadgeIds: [],
       quote: quoteBody,
       isAuthenticated: false,
+      userId: null,
       userEmail: null,
       displayName: "Usuario",
       avatarUrl: null,
@@ -118,6 +121,7 @@ export async function getUserProgress(): Promise<UserProgressPayload> {
       : (badges.data?.map((r) => r.badge_id) ?? []),
     quote: quoteBody,
     isAuthenticated: true,
+    userId: user.id,
     userEmail: user.email ?? null,
     displayName,
     avatarUrl,
