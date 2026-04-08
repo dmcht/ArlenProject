@@ -28,3 +28,13 @@ export function isMissingServiceRoleConfigError(message: string): boolean {
     m.includes("configura supabase_service_role")
   );
 }
+
+/** Clave errónea o corrupta (p. ej. copia incompleta); PostgREST responde "Invalid API key". */
+export function isInvalidSupabaseApiKeyError(message: string): boolean {
+  const m = message.toLowerCase();
+  return (
+    m.includes("invalid api key") ||
+    m.includes("jwt could not be decoded") ||
+    (m.includes("jwt") && m.includes("invalid"))
+  );
+}
